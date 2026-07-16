@@ -1,3 +1,4 @@
+from civicsignal_api.models.auth import AdminAccount, AdminSession, AuditEvent, Role
 from civicsignal_api.models.resource import (
     Category,
     ContactChannel,
@@ -10,6 +11,9 @@ from civicsignal_api.models.resource import (
 from civicsignal_api.models.system_record import SystemRecord
 
 __all__ = [
+    "AdminAccount",
+    "AdminSession",
+    "AuditEvent",
     "Category",
     "ContactChannel",
     "Location",
@@ -18,4 +22,5 @@ __all__ = [
     "Source",
     "SystemRecord",
     "Verification",
+    "Role",
 ]

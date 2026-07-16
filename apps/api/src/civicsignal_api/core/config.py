@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
     max_request_bytes: int = 1_048_576
     emergency_message: str = "Call 911 for immediate danger."
+    session_cookie_name: str = "civicsignal_admin_session"
+    session_absolute_seconds: int = 28_800
+    session_idle_seconds: int = 1_800
+    cookie_secure: bool = False
     database_url: str = Field(
         default="postgresql+asyncpg://civicsignal:local-development-only@localhost:5432/civicsignal"
     )

@@ -9,6 +9,7 @@ from civicsignal_api.core.errors import register_error_handlers
 from civicsignal_api.core.logging import configure_logging
 from civicsignal_api.core.middleware import correlation_id_middleware, request_size_middleware
 from civicsignal_api.db.session import create_database_engine, create_session_factory
+from civicsignal_api.routes.auth import router as auth_router
 from civicsignal_api.routes.health import router as health_router
 from civicsignal_api.routes.resources import router as resources_router
 
@@ -37,13 +38,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=resolved_settings.allowed_origins,
-        allow_credentials=False,
-        allow_methods=["GET"],
-        allow_headers=["Accept", "Content-Type", "X-Request-ID"],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+        allow_headers=["Accept", "Content-Type", "X-Request-ID", "X-CSRF-Token"],
     )
     app.middleware("http")(request_size_middleware)
     app.middleware("http")(correlation_id_middleware)
     register_error_handlers(app)
     app.include_router(health_router)
+    app.include_router(auth_router)
     app.include_router(resources_router)
     return app

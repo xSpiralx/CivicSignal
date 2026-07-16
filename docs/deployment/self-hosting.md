@@ -18,3 +18,9 @@ Shell redirection exposes the backup to local filesystem permissions; protect an
 Back up, read `CHANGELOG.md`, pull the chosen signed/tagged version, build images, run `alembic upgrade head` as a one-off job, restart, and verify health and a representative resource. Keep the previous images and database backup for rollback. Database downgrade is not automatically safe after new writes; prefer restoring the compatible backup.
 
 External PostgreSQL is supported by setting `DATABASE_URL` and omitting the bundled `db` service in an operator-maintained override. Core operation has no CivicSignal cloud dependency. Branding and emergency text use environment configuration; a fuller branding schema remains future work.
+
+## Administrator identity
+
+Set `COOKIE_SECURE=true` behind HTTPS, apply migrations, and create the first administrator with the
+interactive command documented in [governance-security.md](../governance-security.md). Never put an
+administrator password in environment files, Compose manifests, shell history, or build logs.

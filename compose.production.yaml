@@ -19,6 +19,9 @@ services:
       DATABASE_URL: ${DATABASE_URL:?required}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       CORS_ORIGINS: ${CORS_ORIGINS:?required}
+      COOKIE_SECURE: "true"
+      SESSION_ABSOLUTE_SECONDS: ${SESSION_ABSOLUTE_SECONDS:-28800}
+      SESSION_IDLE_SECONDS: ${SESSION_IDLE_SECONDS:-1800}
     depends_on:
       db: { condition: service_healthy }
     healthcheck:

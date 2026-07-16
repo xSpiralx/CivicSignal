@@ -20,6 +20,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://civicsignal:local-development-only@db:5432/civicsignal}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
     command: sh -c "alembic upgrade head && uvicorn civicsignal_api.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ./apps/api/src:/app/src
