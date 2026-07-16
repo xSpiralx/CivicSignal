@@ -33,7 +33,7 @@ jobs:
         working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
           cache: npm
@@ -60,7 +60,7 @@ jobs:
       - run: cp .env.example .env
       - run: docker compose up --build -d
       - run: docker compose exec -T api civicsignal-seed
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: "22", cache: npm, cache-dependency-path: apps/web/package-lock.json }
       - run: npm ci && npx playwright install --with-deps chromium
         working-directory: apps/web
