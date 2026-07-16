@@ -21,6 +21,7 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
       COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,api}
     command: sh -c "alembic upgrade head && uvicorn civicsignal_api.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
       - ./apps/api/src:/app/src
@@ -33,7 +34,7 @@ services:
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
       interval: 10s
-      timeout: 3s
+      timeout: 10s
       retries: 5
     restart: unless-stopped
 
@@ -54,7 +55,7 @@ services:
       api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000"]
       interval: 10s
       timeout: 3s
       retries: 5
