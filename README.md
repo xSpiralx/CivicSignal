@@ -13,7 +13,8 @@ CivicSignal addresses a deceptively hard public-interest problem: people need cl
 | Docker Compose and PostgreSQL | Deployment choice | Supported |
 | Branding and emergency message | Environment configuration | Environment configuration |
 | Fictional demonstration seed | Optional | Optional |
-| Accounts, admin UI, AI, scraping, live availability | Not implemented | Not implemented |
+| Secure administrator access and account management | Included | Included |
+| Resource governance, AI, scraping, live availability | Not implemented | Not implemented |
 
 Public results require an active organization and service, at least one source, and a latest verification state of `verified` or `needs_reverification`. Draft, rejected, archived, inactive, and sourceless records are excluded. A stale label is not a confidence score and verification does not promise availability.
 
@@ -34,6 +35,32 @@ curl 'http://localhost:8000/api/v1/services?category=food-assistance&city=Exampl
 ```
 
 Stop with `docker compose down`. Reset deliberately with `docker compose down -v`. See [development](docs/development.md), [self-hosting](docs/deployment/self-hosting.md), and [architecture](docs/architecture.md).
+
+### Direct local administrator quick start
+
+Docker is optional for the application processes. Start PostgreSQL locally, set `DATABASE_URL`,
+then run:
+
+```bash
+cd apps/api
+python -m venv .venv
+.venv/bin/pip install -e '.[dev]'
+.venv/bin/alembic upgrade head
+.venv/bin/civicsignal admin create --email admin@example.test --display-name "Local admin"
+.venv/bin/uvicorn civicsignal_api.main:app --reload
+```
+
+In another terminal:
+
+```bash
+cd apps/web
+npm ci
+API_INTERNAL_URL=http://localhost:8000 npm run dev
+```
+
+Open the public directory at <http://localhost:3000/resources> and administrator sign-in at
+<http://localhost:3000/admin/sign-in>. Sign out from the administrator header. Run backend checks
+with `cd apps/api && .venv/bin/pytest` and frontend checks with `cd apps/web && npm test`.
 
 ## Architecture
 

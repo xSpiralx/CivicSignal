@@ -16,6 +16,13 @@ class Permission(StrEnum):
     EXPORT_CREATE = "export.create"
     AUDIT_VIEW = "audit.view"
     ADMIN_MANAGE = "admin.manage"
+    ACCOUNT_VIEW = "account.view"
+    ACCOUNT_CREATE = "account.create"
+    ACCOUNT_UPDATE = "account.update"
+    ACCOUNT_DISABLE = "account.disable"
+    ACCOUNT_ASSIGN_ROLES = "account.assign_roles"
+    SESSION_VIEW_ALL = "session.view_all"
+    SESSION_REVOKE_ALL = "session.revoke_all"
 
 
 ROLE_PERMISSIONS: dict[RoleName, frozenset[Permission]] = {

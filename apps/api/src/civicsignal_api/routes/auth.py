@@ -36,9 +36,14 @@ def view(auth: AuthContext, csrf_token: str) -> SessionView:
             display_name=account.display_name,
             roles=sorted(role.name.value for role in account.roles),
             permissions=sorted(p.value for p in permissions_for(account)),
+            is_active=account.is_active,
+            created_at=account.created_at,
+            last_login_at=account.last_login_at,
         ),
         csrf_token=csrf_token,
         expires_at=auth.session.expires_at,
+        session_id=auth.session.id,
+        created_at=auth.session.created_at,
     )
 
 
@@ -109,9 +114,12 @@ async def sign_in(
     return view(AuthContext(account, session), csrf)
 
 
-@router.get("/session", response_model=AccountView)
-async def current_session(auth: CurrentAuth) -> AccountView:
-    return view(auth, "").account
+@router.get("/session", response_model=SessionView)
+async def current_session(db: Database, auth: CurrentAuth) -> SessionView:
+    csrf = new_secret()
+    auth.session.csrf_hash = secret_hash(csrf)
+    await db.commit()
+    return view(auth, csrf)
 
 
 @router.post("/sign-out", status_code=204)
