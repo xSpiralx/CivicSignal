@@ -11,7 +11,9 @@ export default function SignInPage() {
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has("expired"))
-      setError("Your session ended. Sign in again to continue.");
+      queueMicrotask(() =>
+        setError("Your session ended. Sign in again to continue."),
+      );
     loadSession()
       .then(() => router.replace("/admin"))
       .catch(() => undefined);

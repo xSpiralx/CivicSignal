@@ -22,6 +22,32 @@ export type SafeSession = {
   expires_at: string;
   current: boolean;
 };
+export type RoleInfo = { name: string; permissions: string[] };
+export type DraftContent = {
+  organization_name: string;
+  organization_description: string;
+  organization_type: string;
+  service_name: string;
+  description: string;
+  eligibility: string | null;
+  languages: string[];
+  accessibility: string | null;
+  emergency_availability: boolean;
+  source_name: string;
+  source_url: string;
+  source_organization: string;
+};
+export type GovernedResource = {
+  id: string;
+  state: string;
+  revision: number;
+  content: DraftContent;
+  owner_id: string;
+  assigned_reviewer_id: string | null;
+  public_service_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
 
 let csrfToken = "";
 export function setCsrf(value: string) {

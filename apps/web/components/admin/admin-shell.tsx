@@ -42,6 +42,7 @@ export function AdminShell({
     );
   const links = [
     { href: "/admin", label: "Overview" },
+    { href: "/admin/resources", label: "Resources" },
     { href: "/admin/sessions", label: "My sessions" },
   ];
   if (session.account.permissions.includes("account.view"))
