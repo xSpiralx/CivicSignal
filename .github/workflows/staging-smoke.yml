@@ -1,0 +1,31 @@
+name: Staging smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required secrets
+        env:
+          URL: ${{ secrets.STAGING_URL }}
+          USERNAME: ${{ secrets.STAGING_ACCESS_USERNAME }}
+          PASSWORD: ${{ secrets.STAGING_ACCESS_PASSWORD }}
+        run: |
+          test -n "$URL"
+          test -n "$USERNAME"
+          test -n "$PASSWORD"
+      - name: Check health and staging protections
+        env:
+          URL: ${{ secrets.STAGING_URL }}
+          USERNAME: ${{ secrets.STAGING_ACCESS_USERNAME }}
+          PASSWORD: ${{ secrets.STAGING_ACCESS_PASSWORD }}
+        run: |
+          curl --fail --silent --show-error "$URL/api/health"
+          curl --fail --silent --show-error --user "$USERNAME:$PASSWORD" "$URL/" | grep -q "STAGING"
+          curl --fail --silent --show-error --user "$USERNAME:$PASSWORD" "$URL/robots.txt" | grep -q "Disallow: /"
+          curl --fail --silent --show-error --head --user "$USERNAME:$PASSWORD" "$URL/admin/sign-in" | grep -qi "x-robots-tag: noindex"

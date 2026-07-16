@@ -21,6 +21,8 @@ const service = {
     status: "verified" as const,
     last_checked_at: "2026-07-01T00:00:00Z",
     may_be_stale: false,
+    next_due_at: "2026-10-01T00:00:00Z",
+    freshness: "current" as const,
   },
 };
 

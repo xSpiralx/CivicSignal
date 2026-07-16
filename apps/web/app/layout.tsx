@@ -22,6 +22,10 @@ export const metadata: Metadata = {
     ],
   },
   twitter: { card: "summary_large_image", images: ["/og.png"] },
+  robots:
+    process.env.NEXT_PUBLIC_APP_ENV === "staging"
+      ? { index: false, follow: false, nocache: true }
+      : undefined,
 };
 
 export default function RootLayout({
@@ -30,6 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        {process.env.NEXT_PUBLIC_APP_ENV === "staging" && (
+          <div className="no-print bg-[#6d3fc0] px-4 py-2 text-center text-sm font-bold text-white">
+            STAGING · Fictional or approved test data only · Not a public
+            service
+          </div>
+        )}
         <a className="skip-link" href="#main-content">
           Skip to main content
         </a>

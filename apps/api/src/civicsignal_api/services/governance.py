@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 from fastapi import HTTPException
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from civicsignal_api.models.auth import AdminAccount, AuditEvent
@@ -11,6 +12,10 @@ from civicsignal_api.models.governance import (
     WorkflowState,
 )
 from civicsignal_api.models.resource import (
+    Category,
+    ContactChannel,
+    ContactType,
+    Location,
     Organization,
     Service,
     Source,
@@ -117,9 +122,9 @@ async def publish(
             legal_name=None,
             description=content.organization_description,
             organization_type=content.organization_type,
-            website=None,
-            public_phone=None,
-            public_email=None,
+            website=str(content.website) if content.website else None,
+            public_phone=content.contact_phone,
+            public_email=content.contact_email,
             languages=", ".join(content.languages),
             accessibility=content.accessibility,
             is_active=True,
@@ -133,7 +138,7 @@ async def publish(
             cost_information=None,
             languages=", ".join(content.languages),
             accessibility=content.accessibility,
-            application_instructions=None,
+            application_instructions=content.application_instructions,
             appointment_requirements=None,
             emergency_availability=content.emergency_availability,
             is_active=True,
@@ -155,6 +160,50 @@ async def publish(
             ", ".join(content.languages),
             content.accessibility,
         )
+    for name in content.categories:
+        slug = "-".join(name.casefold().split())[:80]
+        category = await db.scalar(select(Category).where(Category.slug == slug))
+        if category is None:
+            category = Category(slug=slug, name=name[:120], description=None, is_active=True)
+            db.add(category)
+        service.categories.append(category)
+    if content.location_name or content.service_area:
+        db.add(
+            Location(
+                organization=service.organization,
+                service=service,
+                display_name=content.location_name or "Service area",
+                address_line_1=None,
+                address_line_2=None,
+                city=content.city,
+                region=content.region,
+                postal_code=content.postal_code,
+                country="US",
+                latitude=None,
+                longitude=None,
+                service_area=content.service_area,
+                transportation=content.transportation,
+                accessibility=content.accessibility,
+                hours=content.hours,
+                timezone="America/New_York",
+                is_active=True,
+            )
+        )
+    for channel_type, label, value in (
+        (ContactType.PHONE, "Phone", content.contact_phone),
+        (ContactType.EMAIL, "Email", content.contact_email),
+        (ContactType.WEBSITE, "Website", str(content.website) if content.website else None),
+    ):
+        if value:
+            db.add(
+                ContactChannel(
+                    service=service,
+                    channel_type=channel_type,
+                    label=label,
+                    value=value,
+                    is_primary=channel_type == ContactType.PHONE,
+                )
+            )
     now = utcnow()
     db.add(
         Source(

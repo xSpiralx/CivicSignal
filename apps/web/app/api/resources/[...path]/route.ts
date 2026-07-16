@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { internalApiBase } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
@@ -7,7 +8,7 @@ export async function GET(
   context: { params: Promise<{ path: string[] }> },
 ) {
   const { path } = await context.params;
-  const apiUrl = process.env.API_INTERNAL_URL ?? "http://localhost:8000";
+  const apiUrl = internalApiBase();
   const target = new URL(
     `${apiUrl}/api/v1/${path.map(encodeURIComponent).join("/")}`,
   );

@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
+import { internalApiBase } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const apiUrl = process.env.API_INTERNAL_URL ?? "http://localhost:8000";
+  const apiUrl = internalApiBase();
   try {
     const response = await fetch(`${apiUrl}/health/ready`, {
       cache: "no-store",

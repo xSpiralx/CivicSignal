@@ -57,6 +57,21 @@ def _verification(service: Service) -> VerificationResponse:
     stale = latest.status == VerificationStatus.NEEDS_REVERIFICATION or (
         expires_at is not None and expires_at < now
     )
+    freshness: Literal["current", "due_soon", "due", "overdue", "critically_stale", "unknown"]
+    if expires_at is None:
+        freshness = "unknown"
+    else:
+        days = (expires_at - now).total_seconds() / 86_400
+        if days < -30:
+            freshness = "critically_stale"
+        elif days < -7:
+            freshness = "overdue"
+        elif days <= 0:
+            freshness = "due"
+        elif days <= 14:
+            freshness = "due_soon"
+        else:
+            freshness = "current"
     return VerificationResponse(
         status=cast(
             Literal[VerificationStatus.VERIFIED, VerificationStatus.NEEDS_REVERIFICATION],
@@ -64,6 +79,8 @@ def _verification(service: Service) -> VerificationResponse:
         ),
         last_checked_at=latest.checked_at,
         may_be_stale=stale,
+        next_due_at=expires_at,
+        freshness=freshness,
     )
 
 

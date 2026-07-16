@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { internalApiBase } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,7 @@ async function proxy(
 ) {
   const { path } = await context.params;
   const target = new URL(
-    `${process.env.API_INTERNAL_URL ?? "http://localhost:8000"}/api/v1/admin/${path.map(encodeURIComponent).join("/")}`,
+    `${internalApiBase()}/api/v1/admin/${path.map(encodeURIComponent).join("/")}`,
   );
   request.nextUrl.searchParams.forEach((value, key) =>
     target.searchParams.append(key, value),

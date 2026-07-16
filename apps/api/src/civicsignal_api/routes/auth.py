@@ -107,7 +107,8 @@ async def sign_in(
         token,
         httponly=True,
         secure=request.app.state.settings.cookie_secure,
-        samesite="strict",
+        samesite=request.app.state.settings.cookie_samesite,
+        domain=request.app.state.settings.cookie_domain,
         path="/api/v1/admin",
         max_age=request.app.state.settings.session_absolute_seconds,
     )
@@ -135,4 +136,8 @@ async def sign_out(request: Request, response: Response, db: Database, auth: Csr
         )
     )
     await db.commit()
-    response.delete_cookie(request.app.state.settings.session_cookie_name, path="/api/v1/admin")
+    response.delete_cookie(
+        request.app.state.settings.session_cookie_name,
+        path="/api/v1/admin",
+        domain=request.app.state.settings.cookie_domain,
+    )

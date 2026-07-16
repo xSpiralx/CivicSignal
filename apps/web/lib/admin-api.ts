@@ -33,6 +33,18 @@ export type DraftContent = {
   languages: string[];
   accessibility: string | null;
   emergency_availability: boolean;
+  categories: string[];
+  contact_phone: string | null;
+  contact_email: string | null;
+  website: string | null;
+  location_name: string | null;
+  city: string | null;
+  region: string | null;
+  postal_code: string | null;
+  service_area: string | null;
+  hours: string | null;
+  transportation: string | null;
+  application_instructions: string | null;
   source_name: string;
   source_url: string;
   source_organization: string;

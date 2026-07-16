@@ -1,0 +1,72 @@
+databases:
+  - name: civicsignal-staging-db
+    plan: basic-256mb
+    region: ohio
+    postgresMajorVersion: "17"
+    databaseName: civicsignal_staging
+    user: civicsignal_staging
+    ipAllowList: []
+
+services:
+  - type: pserv
+    name: civicsignal-api-staging
+    runtime: docker
+    plan: starter
+    region: ohio
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: ./apps/api
+    dockerCommand: /bin/sh -c "uvicorn civicsignal_api.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"
+    preDeployCommand: alembic upgrade head
+    healthCheckPath: /health/ready
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_ENV
+        value: staging
+      - key: ENVIRONMENT
+        value: staging
+      - key: DATABASE_URL
+        fromDatabase:
+          name: civicsignal-staging-db
+          property: connectionString
+      - key: ALLOWED_HOSTS
+        value: civicsignal-api-staging
+      - key: CORS_ORIGINS
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: strict
+      - key: SESSION_ABSOLUTE_SECONDS
+        value: "28800"
+      - key: SESSION_IDLE_SECONDS
+        value: "1800"
+      - key: DEMO_MODE
+        value: "true"
+      - key: LOG_LEVEL
+        value: INFO
+
+  - type: web
+    name: civicsignal-web-staging
+    runtime: docker
+    plan: starter
+    region: ohio
+    dockerfilePath: ./apps/web/Dockerfile
+    dockerContext: ./apps/web
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NEXT_PUBLIC_APP_ENV
+        value: staging
+      - key: API_INTERNAL_URL
+        fromService:
+          type: pserv
+          name: civicsignal-api-staging
+          property: hostport
+      - key: PUBLIC_BASE_URL
+        sync: false
+      - key: STAGING_ACCESS_USERNAME
+        sync: false
+      - key: STAGING_ACCESS_PASSWORD
+        generateValue: true
+      - key: NEXT_PUBLIC_EMERGENCY_MESSAGE
+        value: "Fictional staging data only. Contact your local emergency number for immediate danger."

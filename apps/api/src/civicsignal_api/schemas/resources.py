@@ -47,6 +47,8 @@ class VerificationResponse(BaseModel):
     status: Literal[VerificationStatus.VERIFIED, VerificationStatus.NEEDS_REVERIFICATION]
     last_checked_at: datetime
     may_be_stale: bool
+    next_due_at: datetime | None
+    freshness: Literal["current", "due_soon", "due", "overdue", "critically_stale", "unknown"]
 
 
 class OrganizationSummary(BaseModel):

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SafetyNotice } from "@/components/safety-notice";
 import { formatChecked, type ServiceDetail } from "@/lib/resources";
+import { internalApiBase } from "@/lib/server-api";
 
 async function getResource(id: string): Promise<ServiceDetail | null> {
-  const api = process.env.API_INTERNAL_URL ?? "http://localhost:8000";
+  const api = internalApiBase();
   const response = await fetch(
     `${api}/api/v1/services/${encodeURIComponent(id)}`,
     { cache: "no-store" },
@@ -68,6 +69,17 @@ export default async function ResourceDetailPage({
             Last checked {formatChecked(resource.verification.last_checked_at)}.
             Verification does not guarantee current availability.
           </p>
+          <p className="mt-2 font-semibold">
+            Freshness: {resource.verification.freshness.replaceAll("_", " ")}.
+            {resource.verification.next_due_at &&
+              ` Next review due ${formatChecked(resource.verification.next_due_at)}.`}
+          </p>
+          {resource.verification.freshness !== "current" && (
+            <p className="mt-2">
+              Information may have changed. Confirm availability directly with
+              the provider.
+            </p>
+          )}
         </section>
         <section aria-labelledby="details" className="mt-8">
           <h2 id="details" className="text-2xl font-bold">

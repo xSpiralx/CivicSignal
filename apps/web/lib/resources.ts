@@ -7,6 +7,14 @@ export type Verification = {
   status: "verified" | "needs_reverification";
   last_checked_at: string;
   may_be_stale: boolean;
+  next_due_at: string | null;
+  freshness:
+    | "current"
+    | "due_soon"
+    | "due"
+    | "overdue"
+    | "critically_stale"
+    | "unknown";
 };
 export type Contact = {
   channel_type: string;

@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from civicsignal_api.core.config import Settings, get_settings
 from civicsignal_api.core.errors import register_error_handlers
@@ -37,6 +38,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         description="Read-only public API for sourced community-resource records.",
     )
     app.state.settings = resolved_settings
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=resolved_settings.trusted_hosts)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=resolved_settings.allowed_origins,
