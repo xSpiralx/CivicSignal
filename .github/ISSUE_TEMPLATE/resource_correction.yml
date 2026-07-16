@@ -1,0 +1,15 @@
+name: Resource correction or removal
+description: Flag sourced public information that may be wrong or should be removed
+body:
+  - type: input
+    id: resource
+    attributes: { label: CivicSignal resource URL }
+    validations: { required: true }
+  - type: textarea
+    id: correction
+    attributes: { label: Requested correction, description: Do not include client or crisis information. }
+    validations: { required: true }
+  - type: textarea
+    id: evidence
+    attributes: { label: Authoritative supporting source URLs }
+    validations: { required: true }

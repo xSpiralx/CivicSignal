@@ -1,0 +1,18 @@
+name: Resource contribution
+description: Suggest a traceable resource for future controlled review
+body:
+  - type: textarea
+    id: resource
+    attributes: { label: Organization and service, description: Public factual information only. }
+    validations: { required: true }
+  - type: textarea
+    id: sources
+    attributes: { label: Authoritative source URLs and retrieval date }
+    validations: { required: true }
+  - type: checkboxes
+    id: attest
+    attributes:
+      label: Attestation
+      options:
+        - label: I have not included personal crisis information or claimed real-time availability.
+          required: true

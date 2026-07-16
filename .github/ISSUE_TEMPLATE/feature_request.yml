@@ -1,0 +1,14 @@
+name: Feature request
+description: Propose a user-centered improvement
+body:
+  - type: textarea
+    id: problem
+    attributes: { label: Human problem, description: Explain the need without personal crisis information. }
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes: { label: Proposed outcome and alternatives }
+    validations: { required: true }
+  - type: textarea
+    id: risks
+    attributes: { label: Accessibility, privacy, safety, and maintenance risks }

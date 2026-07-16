@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --ink: #10243f;
+  --muted: #52677f;
+  --paper: #edf6ff;
+  --surface: rgba(255, 255, 255, 0.68);
+  --surface-strong: rgba(255, 255, 255, 0.9);
+  --line: rgba(126, 159, 192, 0.3);
+  --teal: #087f8c;
+  --teal-dark: #075d6c;
+  --blue: #2775e6;
+  --urgent: #a52d43;
+  --shadow:
+    0 24px 70px rgba(42, 92, 140, 0.16), 0 2px 8px rgba(35, 76, 112, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  font-family:
+    ui-rounded,
+    "SF Pro Rounded",
+    "SF Pro Display",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.55;
+  background:
+    radial-gradient(
+      circle at 12% 6%,
+      rgba(174, 229, 255, 0.78),
+      transparent 29rem
+    ),
+    radial-gradient(
+      circle at 87% 15%,
+      rgba(210, 200, 255, 0.55),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 50% 75%,
+      rgba(167, 240, 220, 0.48),
+      transparent 36rem
+    ),
+    linear-gradient(150deg, #f8fcff 0%, #eaf5ff 52%, #f7fbff 100%);
+  background-attachment: fixed;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.32;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.65) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.65) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
+}
+a {
+  color: inherit;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #136de0;
+  outline-offset: 3px;
+}
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: -6rem;
+  z-index: 100;
+  border-radius: 999px;
+  background: #10243f;
+  color: white;
+  padding: 0.75rem 1.15rem;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+.glass {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.82),
+    rgba(244, 250, 255, 0.5)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(105, 150, 190, 0.12);
+  backdrop-filter: blur(24px) saturate(145%);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+}
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  box-shadow: 0 12px 42px rgba(44, 91, 130, 0.11);
+  backdrop-filter: blur(18px);
+}
+.liquid-button {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 10px 24px rgba(29, 102, 181, 0.2);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.liquid-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 15px 30px rgba(29, 102, 181, 0.25);
+}
+.eyebrow {
+  color: var(--teal-dark);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.text-balance {
+  text-wrap: balance;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass-subtle {
+    backdrop-filter: none;
+    background: #fff;
+  }
+}
+@media print {
+  body {
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .glass,
+  .glass-subtle {
+    box-shadow: none;
+    border: 1px solid #ccd5df;
+    background: white;
+  }
+}
