@@ -45,6 +45,7 @@ services:
     environment:
       API_INTERNAL_URL: ${API_INTERNAL_URL:-http://api:8000}
       NEXT_PUBLIC_EMERGENCY_MESSAGE: ${NEXT_PUBLIC_EMERGENCY_MESSAGE:-Call 911 for immediate danger.}
+      NEXT_PUBLIC_REPOSITORY_URL: ${NEXT_PUBLIC_REPOSITORY_URL:-https://github.com/xSpiralx/CivicSignal}
     command: npm run dev
     volumes:
       - ./apps/web:/app

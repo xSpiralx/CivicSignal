@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { ResourceCard } from "./resource-card";
 import type { Category, ServiceList } from "@/lib/resources";
 
@@ -10,36 +10,44 @@ export function ResourceSearch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [params, setParams] = useState(() => new URLSearchParams());
+  const requestSequence = useRef(0);
 
   async function load(next: URLSearchParams) {
+    const request = ++requestSequence.current;
     setLoading(true);
     setError("");
     try {
       const response = await fetch(`/api/resources/services?${next}`);
       if (!response.ok) throw new Error("Request failed");
-      setResults((await response.json()) as ServiceList);
+      const data = (await response.json()) as ServiceList;
+      if (request !== requestSequence.current) return;
+      setResults(data);
       setParams(next);
       window.history.replaceState(null, "", `/resources?${next}`);
     } catch {
-      setError("We could not load resources. Please try again.");
+      if (request === requestSequence.current)
+        setError("We could not load resources. Please try again.");
     } finally {
-      setLoading(false);
+      if (request === requestSequence.current) setLoading(false);
     }
   }
 
   useEffect(() => {
     const initial = new URLSearchParams(window.location.search);
+    const request = ++requestSequence.current;
     void fetch(`/api/resources/services?${initial}`)
       .then((response) => {
         if (!response.ok) throw new Error("Request failed");
         return response.json() as Promise<ServiceList>;
       })
       .then((data) => {
+        if (request !== requestSequence.current) return;
         setResults(data);
         setParams(initial);
         setLoading(false);
       })
       .catch(() => {
+        if (request !== requestSequence.current) return;
         setError("We could not load resources. Please try again.");
         setLoading(false);
       });

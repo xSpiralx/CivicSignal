@@ -8,6 +8,10 @@
   report resolution.
 - Add immutable proposed-revision editing, server readiness checks, source provenance, comparison,
   verified publication, and accessible dialogs for administrative workflow actions.
+- Add a portfolio-demo banner, curated fictional service set, guided administrator dashboard,
+  read-only audit history, responsive screenshots, and recruiter/interview documentation.
+- Fix PostgreSQL role-enum compatibility, administrator proxy cookie scope, development CSP noise,
+  category links, contact-link semantics, and overlapping public-search request races.
 
 - Add deterministic, idempotent stale detection with dry-run support, audit events, and one active
   re-verification task per service.

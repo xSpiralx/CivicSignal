@@ -2,13 +2,17 @@ import Link from "next/link";
 import { HealthStatus } from "@/components/health-status";
 
 const categories = [
-  "Food assistance",
-  "Safe shelter",
-  "Transportation",
-  "Healthcare",
-  "Family support",
-  "Legal help",
+  ["Food assistance", "food-assistance"],
+  ["Housing support", "housing-assistance"],
+  ["Transportation", "transportation"],
+  ["Healthcare access", "healthcare-access"],
+  ["Child and family", "child-family"],
+  ["Legal assistance", "legal-assistance"],
 ];
+
+const repository =
+  process.env.NEXT_PUBLIC_REPOSITORY_URL ??
+  "https://github.com/xSpiralx/CivicSignal";
 
 export default function Home() {
   return (
@@ -93,10 +97,10 @@ export default function Home() {
           </Link>
         </div>
         <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-3">
-          {categories.map((category, index) => (
+          {categories.map(([category, slug], index) => (
             <Link
               key={category}
-              href={`/resources?category=${encodeURIComponent(category.toLowerCase().replaceAll(" ", "-"))}`}
+              href={`/resources?category=${slug}`}
               className="glass-subtle group min-h-28 rounded-[1.5rem] p-5 font-bold transition hover:-translate-y-1"
             >
               <span
@@ -164,7 +168,38 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8">
+      <section
+        id="about-project"
+        aria-labelledby="about-project-heading"
+        className="mx-auto max-w-7xl px-5 py-12 sm:px-8"
+      >
+        <div className="mb-5 grid gap-5 lg:grid-cols-3">
+          <article className="glass-subtle rounded-[1.8rem] p-7 lg:col-span-2">
+            <p className="eyebrow">Why CivicSignal exists</p>
+            <h2
+              id="about-project-heading"
+              className="mt-2 text-2xl font-extrabold"
+            >
+              Community information changes. Trust needs a visible process.
+            </h2>
+            <p className="mt-3 text-[var(--muted)]">
+              CivicSignal demonstrates how public corrections can move through
+              human triage, re-verification, an immutable proposed revision, and
+              audited publication without silently rewriting history.
+            </p>
+          </article>
+          <article className="glass-subtle rounded-[1.8rem] p-7">
+            <p className="eyebrow">Privacy + access</p>
+            <h2 className="mt-2 text-2xl font-extrabold">
+              Designed intentionally.
+            </h2>
+            <p className="mt-3 text-[var(--muted)]">
+              Search requires no account, visitor queries are not retained, and
+              public and administrator workflows use semantic, keyboard-friendly
+              controls.
+            </p>
+          </article>
+        </div>
         <div className="grid gap-5 md:grid-cols-2">
           <article className="glass-subtle rounded-[1.8rem] p-7">
             <p className="eyebrow">Open source</p>
@@ -177,7 +212,7 @@ export default function Home() {
               human-reviewed.
             </p>
             <a
-              href="https://github.com"
+              href={repository}
               className="mt-5 inline-block font-bold text-[var(--teal-dark)]"
             >
               Explore the repository →
@@ -192,12 +227,12 @@ export default function Home() {
               Phone numbers, hours, and eligibility can change. Correction
               reports never modify listings automatically.
             </p>
-            <a
-              href="https://github.com"
+            <Link
+              href="/resources"
               className="mt-5 inline-block font-bold text-[var(--teal-dark)]"
             >
               Report incorrect information →
-            </a>
+            </Link>
           </article>
         </div>
       </section>

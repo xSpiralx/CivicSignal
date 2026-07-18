@@ -49,6 +49,8 @@ export function AdminShell({
     links.push({ href: "/admin/corrections", label: "Corrections" });
   if (session.account.permissions.includes("reverification.view"))
     links.push({ href: "/admin/reverification", label: "Re-verification" });
+  if (session.account.permissions.includes("audit.view"))
+    links.push({ href: "/admin/audit", label: "Audit history" });
   if (session.account.permissions.includes("account.view"))
     links.push({ href: "/admin/accounts", label: "Accounts" });
   return (

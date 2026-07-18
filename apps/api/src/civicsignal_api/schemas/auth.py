@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class SignInRequest(BaseModel):
@@ -56,3 +56,15 @@ class SafeSessionView(BaseModel):
     last_used_at: datetime
     expires_at: datetime
     current: bool
+
+
+class AuditEventView(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    actor_id: uuid.UUID | None
+    action: str
+    subject_type: str
+    subject_id: str | None
+    summary: str
+    created_at: datetime

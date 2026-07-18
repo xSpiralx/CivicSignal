@@ -23,6 +23,15 @@ export type SafeSession = {
   current: boolean;
 };
 export type RoleInfo = { name: string; permissions: string[] };
+export type AuditEvent = {
+  id: string;
+  actor_id: string | null;
+  action: string;
+  subject_type: string;
+  subject_id: string | null;
+  summary: string;
+  created_at: string;
+};
 export type DraftContent = {
   organization_name: string;
   organization_description: string;

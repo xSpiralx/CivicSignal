@@ -42,7 +42,11 @@ async function proxy(
       },
     );
     const cookie = upstream.headers.get("set-cookie");
-    if (cookie) response.headers.set("set-cookie", cookie);
+    if (cookie)
+      response.headers.set(
+        "set-cookie",
+        cookie.replace(/Path=\/api\/v1\/admin/i, "Path=/api/admin"),
+      );
     return response;
   } catch {
     return NextResponse.json(

@@ -5,6 +5,14 @@ import { SafetyNotice } from "@/components/safety-notice";
 import { formatChecked, type ServiceDetail } from "@/lib/resources";
 import { internalApiBase } from "@/lib/server-api";
 
+function contactHref(type: string, value: string) {
+  if (["phone", "hotline", "relay_service"].includes(type))
+    return `tel:${value.replace(/[^+\d]/g, "")}`;
+  if (type === "email") return `mailto:${value}`;
+  if (type === "website" && /^https:\/\//i.test(value)) return value;
+  return null;
+}
+
 async function getResource(id: string): Promise<ServiceDetail | null> {
   const api = internalApiBase();
   const response = await fetch(
@@ -86,14 +94,12 @@ export default async function ResourceDetailPage({
             Service details
           </h2>
           <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-            {details
-              .filter(([, value]) => value)
-              .map(([label, value]) => (
-                <div key={label}>
-                  <dt className="font-bold">{label}</dt>
-                  <dd>{value}</dd>
-                </div>
-              ))}
+            {details.map(([label, value]) => (
+              <div key={label}>
+                <dt className="font-bold">{label}</dt>
+                <dd>{value || "Not specified"}</dd>
+              </div>
+            ))}
             <div>
               <dt className="font-bold">Languages</dt>
               <dd>{resource.languages.join(", ") || "Not specified"}</dd>
@@ -107,9 +113,25 @@ export default async function ResourceDetailPage({
           <ul className="mt-3 space-y-2">
             {resource.contacts.map((item) => (
               <li key={`${item.channel_type}-${item.value}`}>
-                <strong>{item.label}:</strong> {item.value}
+                <strong>{item.label}:</strong>{" "}
+                {contactHref(item.channel_type, item.value) ? (
+                  <a
+                    className="text-[var(--teal-dark)] underline"
+                    href={contactHref(item.channel_type, item.value)!}
+                    rel={
+                      item.channel_type === "website"
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                  >
+                    {item.value}
+                  </a>
+                ) : (
+                  item.value
+                )}
               </li>
             ))}
+            {resource.contacts.length === 0 && <li>Not specified</li>}
           </ul>
         </section>
         {resource.locations.map((location) => (
@@ -143,6 +165,12 @@ export default async function ResourceDetailPage({
             {location.transportation && (
               <p>
                 <strong>Transportation:</strong> {location.transportation}
+              </p>
+            )}
+            {location.accessibility && (
+              <p>
+                <strong>Location accessibility:</strong>{" "}
+                {location.accessibility}
               </p>
             )}
           </section>

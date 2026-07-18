@@ -48,7 +48,14 @@ class AdminAccount(Base):
 class Role(Base):
     __tablename__ = "roles"
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[RoleName] = mapped_column(Enum(RoleName, native_enum=False), unique=True)
+    name: Mapped[RoleName] = mapped_column(
+        Enum(
+            RoleName,
+            native_enum=False,
+            values_callable=lambda items: [item.value for item in items],
+        ),
+        unique=True,
+    )
 
 
 class AdminSession(Base):

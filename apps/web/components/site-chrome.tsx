@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+const repository =
+  process.env.NEXT_PUBLIC_REPOSITORY_URL ??
+  "https://github.com/xSpiralx/CivicSignal";
+
 export function SiteHeader() {
   return (
     <header className="no-print sticky top-0 z-40 px-3 pt-3 sm:px-6">
@@ -29,7 +33,7 @@ export function SiteHeader() {
           </Link>
           <a
             className="hidden rounded-full px-3 py-2 hover:bg-white/70 sm:block"
-            href="https://github.com"
+            href={repository}
             rel="noreferrer"
           >
             Open source
@@ -59,11 +63,11 @@ export function SiteFooter() {
           <a href="/privacy">Privacy</a>
           <a href="/security">Security</a>
           <a href="/accessibility">Accessibility</a>
-          <a href="https://github.com">Contribute</a>
+          <a href={repository}>Contribute</a>
         </nav>
       </div>
       <p className="mt-4 text-center text-xs text-[var(--muted)]">
-        Apache-2.0 · Information may change · Confirm availability directly
+        Portfolio-stage release candidate · Fictional data · Apache-2.0
       </p>
     </footer>
   );

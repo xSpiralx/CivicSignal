@@ -33,6 +33,10 @@ async def test_sign_in_session_csrf_and_sign_out(app, client) -> None:  # type: 
     current = await client.get("/api/v1/admin/auth/session")
     assert current.status_code == 200
     current_csrf = current.json()["csrf_token"]
+    audit = await client.get("/api/v1/admin/audit")
+    assert audit.status_code == 200
+    assert audit.json()[0]["action"] == "auth.sign_in"
+    assert "token" not in audit.text.lower()
 
     rejected = await client.post("/api/v1/admin/auth/sign-out")
     assert rejected.status_code == 403

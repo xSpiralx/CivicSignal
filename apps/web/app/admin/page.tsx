@@ -30,7 +30,30 @@ export default function AdminPage() {
             </div>
           </section>
           <section className="glass-subtle rounded-3xl p-6">
-            <h2 className="text-xl font-bold">Access tools</h2>
+            <h2 className="text-xl font-bold">Guided demonstration</h2>
+            <ol className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+              <li className="rounded-2xl bg-white/70 p-4">
+                <strong>1. Review</strong>
+                <br />
+                Open a submitted correction and record triage.
+              </li>
+              <li className="rounded-2xl bg-white/70 p-4">
+                <strong>2. Re-verify</strong>
+                <br />
+                Escalate and claim the resulting task.
+              </li>
+              <li className="rounded-2xl bg-white/70 p-4">
+                <strong>3. Propose</strong>
+                <br />
+                Edit an immutable revision and review readiness.
+              </li>
+              <li className="rounded-2xl bg-white/70 p-4">
+                <strong>4. Publish</strong>
+                <br />
+                Confirm evidence, publish, and inspect the public result.
+              </li>
+            </ol>
+            <h2 className="mt-7 text-xl font-bold">Access tools</h2>
             <div className="mt-4 flex flex-wrap gap-3">
               <Link
                 className="rounded-full bg-white px-4 py-2 font-bold"
@@ -49,11 +72,12 @@ export default function AdminPage() {
             </div>
           </section>
           <section className="rounded-3xl border border-[#c9dbe3] bg-white/75 p-6">
-            <h2 className="font-bold">Governance development status</h2>
+            <h2 className="font-bold">Portfolio demonstration status</h2>
             <p className="mt-2 text-[var(--muted)]">
-              Resource review, verification, publication, import, export, stale
-              detection, and public corrections are not available in this
-              release slice.
+              Resource governance, public corrections, re-verification,
+              immutable proposed revisions, audited publication, and stale
+              detection are available. All records in this environment are
+              fictional.
             </p>
           </section>
         </div>
