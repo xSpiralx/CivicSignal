@@ -2,7 +2,12 @@
 
 ## Unreleased
 
-- Add a human-review-gated Washington, DC pilot candidate dataset with official provenance.
+- Expand the directory model and public search to all U.S. states, D.C., and populated territories
+  while retaining honest record-level coverage notices.
+- Add a checksum-recorded 2026 HRSA health-center staging pipeline; 18,953 active official rows are
+  prepared as bounded, schema-valid, unpublished review candidates.
+- Add a human-governed nationwide ingestion foundation with source-license review records and an
+  initial Massachusetts regional research queue.
 - Add eligibility filtering and name, organization, geography, and verification-date sorting.
 - Add recovery, deployment, rollback, security, accessibility, and v1.0 release records.
 

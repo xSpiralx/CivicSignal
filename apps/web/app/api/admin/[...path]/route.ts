@@ -23,6 +23,7 @@ async function proxy(
         cookie: request.headers.get("cookie") ?? "",
         "x-csrf-token": request.headers.get("x-csrf-token") ?? "",
         "x-request-id": request.headers.get("x-request-id") ?? "",
+        "x-civicsignal-proxy": process.env.PROXY_SHARED_SECRET ?? "",
       },
       body:
         request.method === "GET" || request.method === "HEAD"

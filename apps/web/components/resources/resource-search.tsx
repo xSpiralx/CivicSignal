@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ResourceCard } from "./resource-card";
 import type { Category, ServiceList } from "@/lib/resources";
+import { US_REGIONS } from "@/lib/us-regions";
 
 export function ResourceSearch() {
   const [results, setResults] = useState<ServiceList | null>(null);
@@ -114,14 +115,46 @@ export function ResourceSearch() {
             </option>
           ))}
         </select>
+        <label className="mt-4 block font-bold" htmlFor="city">
+          City or town
+        </label>
+        <input
+          className="mt-2 min-h-12 w-full rounded-2xl border border-white/90 bg-white/65 px-4 shadow-inner"
+          id="city"
+          name="city"
+          maxLength={120}
+          autoComplete="address-level2"
+          defaultValue={params.get("city") ?? ""}
+        />
+        <label className="mt-4 block font-bold" htmlFor="state">
+          State or territory
+        </label>
+        <select
+          className="mt-2 min-h-12 w-full rounded-2xl border border-white/90 bg-white/65 px-4 shadow-inner"
+          id="state"
+          name="state"
+          autoComplete="address-level1"
+          defaultValue={params.get("state") ?? ""}
+        >
+          <option value="">All states and territories</option>
+          {params.get("state") &&
+            !US_REGIONS.some(([code]) => code === params.get("state")) && (
+              <option value={params.get("state")!}>
+                {params.get("state")} (current demo or regional value)
+              </option>
+            )}
+          {US_REGIONS.map(([code, name]) => (
+            <option key={code} value={code}>
+              {name}
+            </option>
+          ))}
+        </select>
         {[
-          ["city", "City"],
-          ["state", "State or region"],
-          ["postal_code", "Postal code"],
-          ["language", "Language"],
-          ["accessibility", "Accessibility need"],
-          ["eligibility", "Who the service is for"],
-        ].map(([name, label]) => (
+          ["postal_code", "Postal code", "postal-code"],
+          ["language", "Language", "off"],
+          ["accessibility", "Accessibility need", "off"],
+          ["eligibility", "Who the service is for", "off"],
+        ].map(([name, label, autoComplete]) => (
           <div key={name}>
             <label className="mt-4 block font-bold" htmlFor={name}>
               {label}
@@ -131,6 +164,7 @@ export function ResourceSearch() {
               id={name}
               name={name}
               maxLength={120}
+              autoComplete={autoComplete}
               defaultValue={params.get(name) ?? ""}
             />
           </div>
@@ -178,8 +212,16 @@ export function ResourceSearch() {
         </div>
         {!loading && !error && results?.items.length === 0 && (
           <div className="glass-subtle mt-6 rounded-[1.5rem] p-7">
-            <h2 className="font-bold">No matching resources</h2>
-            <p>Try removing a filter or using a broader term.</p>
+            <h2 className="font-bold">
+              {params.toString()
+                ? "No verified listings for this search yet"
+                : "No verified listings are available yet"}
+            </h2>
+            <p>
+              Try a nearby city, town, county, state, or broader term.
+              Searchable nationwide does not mean every area already has
+              reviewed coverage.
+            </p>
           </div>
         )}
         {error && (

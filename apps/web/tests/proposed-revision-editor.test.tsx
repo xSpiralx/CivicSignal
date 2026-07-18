@@ -33,6 +33,8 @@ const content: DraftContent = {
   city: null,
   region: null,
   postal_code: null,
+  country: "US",
+  timezone: null,
   service_area: "Example County",
   hours: "9–5",
   transportation: null,

@@ -7,6 +7,9 @@ export async function GET() {
   const apiUrl = internalApiBase();
   try {
     const response = await fetch(`${apiUrl}/health/ready`, {
+      headers: {
+        "x-civicsignal-proxy": process.env.PROXY_SHARED_SECRET ?? "",
+      },
       cache: "no-store",
       signal: AbortSignal.timeout(3000),
     });

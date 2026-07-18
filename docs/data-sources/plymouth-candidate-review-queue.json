@@ -1,0 +1,88 @@
+{
+  "created_at": "2026-07-18",
+  "status": "candidate_only",
+  "warning": "AI-assisted discovery only. These are not human-verified, approved for import, or public records in CivicSignal.",
+  "required_next_action": "A named human reviewer must confirm source rights, check every required field against the official page, write neutral original text, resolve duplicates, and record a next review date.",
+  "candidates": [
+    {
+      "candidate_id": "plymouth-hhs",
+      "name": "Plymouth Health and Human Services",
+      "publisher": "Town of Plymouth",
+      "scope": "Plymouth, Massachusetts",
+      "category": "public health navigation",
+      "official_url": "https://www.plymouth-ma.gov/991/Health-and-Human-Services",
+      "risk": "standard",
+      "source_review_status": "under_review"
+    },
+    {
+      "candidate_id": "plymouth-cal",
+      "name": "Plymouth Center for Active Living",
+      "publisher": "Town of Plymouth",
+      "scope": "Plymouth, Massachusetts",
+      "category": "senior services",
+      "official_url": "https://plymouth-ma.gov/245/Center-for-Active-Living",
+      "risk": "standard",
+      "source_review_status": "under_review"
+    },
+    {
+      "candidate_id": "plymouth-veterans",
+      "name": "Plymouth Veterans Services",
+      "publisher": "Town of Plymouth",
+      "scope": "Plymouth, Massachusetts",
+      "category": "veterans services",
+      "official_url": "https://www.plymouth-ma.gov/Directory.aspx?did=58",
+      "risk": "heightened_benefits",
+      "source_review_status": "under_review"
+    },
+    {
+      "candidate_id": "mass-snap",
+      "name": "Massachusetts SNAP",
+      "publisher": "Massachusetts Department of Transitional Assistance",
+      "scope": "Massachusetts statewide",
+      "category": "food assistance",
+      "official_url": "https://www.mass.gov/how-to/supplemental-nutrition-assistance-program-snap-formerly-known-as-food-stamps",
+      "risk": "heightened_benefits",
+      "source_review_status": "restricted"
+    },
+    {
+      "candidate_id": "masshire-career-services",
+      "name": "MassHire Career Services",
+      "publisher": "Massachusetts Department of Career Services",
+      "scope": "Massachusetts statewide",
+      "category": "employment support",
+      "official_url": "https://www.mass.gov/orgs/masshire-department-of-career-services",
+      "risk": "standard",
+      "source_review_status": "restricted"
+    },
+    {
+      "candidate_id": "mass-home-energy-assistance",
+      "name": "Massachusetts Home Energy Assistance Program",
+      "publisher": "Massachusetts Executive Office of Housing and Livable Communities",
+      "scope": "Massachusetts statewide",
+      "category": "utility assistance",
+      "official_url": "https://www.mass.gov/how-to/apply-for-home-heating-and-energy-assistance",
+      "risk": "heightened_benefits",
+      "source_review_status": "restricted"
+    },
+    {
+      "candidate_id": "mass-housing-vouchers",
+      "name": "Massachusetts Rental Assistance and Housing Voucher Programs",
+      "publisher": "Massachusetts Executive Office of Housing and Livable Communities",
+      "scope": "Massachusetts statewide",
+      "category": "housing support",
+      "official_url": "https://www.mass.gov/orgs/rental-assistance-housing-voucher-programs",
+      "risk": "heightened_housing",
+      "source_review_status": "restricted"
+    },
+    {
+      "candidate_id": "mass-chapter-115",
+      "name": "Chapter 115 Veterans Benefits",
+      "publisher": "Massachusetts Executive Office of Veterans Services",
+      "scope": "Massachusetts statewide",
+      "category": "veterans services",
+      "official_url": "https://www.mass.gov/info-details/chapter-115-benefitssafety-net-program",
+      "risk": "heightened_benefits_and_health",
+      "source_review_status": "restricted"
+    }
+  ]
+}

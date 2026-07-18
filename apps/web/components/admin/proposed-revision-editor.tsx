@@ -22,6 +22,8 @@ const labels: Record<string, string> = {
   city: "City",
   region: "State or region",
   postal_code: "Postal code",
+  country: "Country code",
+  timezone: "Time zone",
   service_area: "Service area",
   remote_service_available: "Remote service",
   emergency_availability: "Emergency availability",
@@ -355,12 +357,12 @@ export function ProposedRevisionEditor({
           onChange={(v) => set("service_area", v || null)}
         />
         <Input
-          label="City"
+          label="City or town"
           value={content.city ?? ""}
           onChange={(v) => set("city", v || null)}
         />
         <Input
-          label="State or region"
+          label="State or territory"
           value={content.region ?? ""}
           onChange={(v) => set("region", v || null)}
         />
@@ -368,6 +370,16 @@ export function ProposedRevisionEditor({
           label="Postal code"
           value={content.postal_code ?? ""}
           onChange={(v) => set("postal_code", v || null)}
+        />
+        <Input
+          label="Country code"
+          value={content.country ?? "US"}
+          onChange={(v) => set("country", v.toUpperCase())}
+        />
+        <Input
+          label="IANA time zone"
+          value={content.timezone ?? ""}
+          onChange={(v) => set("timezone", v || null)}
         />
         <label className="flex items-center gap-3 font-bold">
           <input

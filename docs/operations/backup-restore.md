@@ -28,6 +28,8 @@ docker compose exec -T \
 docker compose exec -T db dropdb -U civicsignal civicsignal_restore_drill
 ```
 
-On 2026-07-18, a 65 KB local backup restored successfully. The restored database contained six
-services, one correction, one administrator account, and four audit events; it was at Alembic head
-`20260718_0006`, and application stale detection examined all six services successfully.
+On 2026-07-18 after the source-governance migration, an 80 KB local backup restored successfully.
+The restored database contained six services, one correction, one administrator account, two
+sessions, and four audit events. It was at Alembic head `20260718_0007`. The approved-source,
+import-batch, and candidate tables were restored and queryable with the same zero counts as the
+source database. Application stale detection examined all six services successfully.

@@ -6,7 +6,7 @@ test("search, filter, open details, and return with state", async ({
   await page.goto("/resources");
   await expect(page.getByText("Call 911 for immediate danger.")).toBeVisible();
   await page.getByLabel("What do you need?").fill("food");
-  await page.getByLabel("City").fill("Exampleville");
+  await page.getByLabel("City or town").fill("Exampleville");
   await page.getByRole("button", { name: "Search resources" }).click();
   await expect(page.getByText("1 resources found")).toBeVisible({
     timeout: 15_000,
@@ -19,5 +19,5 @@ test("search, filter, open details, and return with state", async ({
   await expect(page.getByRole("heading", { name: "Sources" })).toBeVisible();
   await page.goBack();
   await expect(page.getByLabel("What do you need?")).toHaveValue("food");
-  await expect(page.getByLabel("City")).toHaveValue("Exampleville");
+  await expect(page.getByLabel("City or town")).toHaveValue("Exampleville");
 });

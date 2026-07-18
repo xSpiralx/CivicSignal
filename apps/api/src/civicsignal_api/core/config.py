@@ -1,7 +1,8 @@
 from functools import lru_cache
 from typing import Literal
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,6 +28,8 @@ class Settings(BaseSettings):
     public_frontend_url: str = "http://localhost:3000"
     api_public_url: str = "http://localhost:8000"
     demo_mode: bool = False
+    proxy_shared_secret: str | None = None
+    maintenance_token: str | None = None
     database_url: str = Field(
         default="postgresql+asyncpg://civicsignal:local-development-only@localhost:5432/civicsignal"
     )
@@ -42,9 +45,32 @@ class Settings(BaseSettings):
     @field_validator("database_url", mode="before")
     @classmethod
     def async_database_driver(cls, value: object) -> object:
-        if isinstance(value, str) and value.startswith("postgresql://"):
-            return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+        if not isinstance(value, str):
+            return value
+        if value.startswith("postgresql://"):
+            value = value.replace("postgresql://", "postgresql+asyncpg://", 1)
+        if value.startswith("postgresql+asyncpg://"):
+            parsed = urlsplit(value)
+            query: list[tuple[str, str]] = []
+            for key, item in parse_qsl(parsed.query, keep_blank_values=True):
+                if key == "channel_binding":
+                    continue
+                query.append(("ssl" if key == "sslmode" else key, item))
+            return urlunsplit(
+                (parsed.scheme, parsed.netloc, parsed.path, urlencode(query), parsed.fragment)
+            )
         return value
+
+    @model_validator(mode="after")
+    def production_secrets_are_present(self) -> "Settings":
+        if self.environment == "production":
+            if not self.proxy_shared_secret or len(self.proxy_shared_secret) < 32:
+                raise ValueError("Production requires a 32+ character proxy shared secret")
+            if not self.maintenance_token or len(self.maintenance_token) < 32:
+                raise ValueError("Production requires a 32+ character maintenance token")
+            if self.demo_mode:
+                raise ValueError("Production cannot run with demo mode enabled")
+        return self
 
 
 @lru_cache

@@ -1,0 +1,39 @@
+{
+  "stable_identifier": "hrsa-health-center-sites-2026",
+  "publisher": "U.S. Health Resources and Services Administration",
+  "dataset": "Health Center Service Delivery and Look-Alike Sites",
+  "source_url": "https://data.hrsa.gov/data/download?titleFilter=Health+Center",
+  "download_url": "https://data.hrsa.gov/DataDownload/DD_Files/Health_Center_Service_Delivery_and_LookAlike_Sites.csv",
+  "terms_url": "https://data.hrsa.gov/data/data-sources?tab=DataUsage",
+  "official_updated_at": "2026-07-18",
+  "retrieved_at": "2026-07-18T21:30:00Z",
+  "source_sha256": "9123c8cf5b0e6bffcfb9a812b707023d1b949847728b21630055e005ac349cc6",
+  "usage_limitation": "None",
+  "source_rows": 18953,
+  "active_2026_candidates_staged": 18953,
+  "bounded_candidate_files": 38,
+  "maximum_rows_per_file": 500,
+  "maximum_file_bytes": 900000,
+  "staging_location": "var/imports/hrsa-2026 (gitignored)",
+  "projection": [
+    "official identifiers",
+    "organization and site names",
+    "public phone and website",
+    "city, state or territory, postal code, and county",
+    "reported operating hours per week",
+    "official source and 2026 record date"
+  ],
+  "excluded_or_not_inferred": [
+    "patient or case information",
+    "demographics",
+    "eligibility",
+    "cost",
+    "daily opening hours",
+    "languages",
+    "accessibility",
+    "real-time availability",
+    "quality rankings"
+  ],
+  "status": "blocked_pending_named_human_source_and_record_review",
+  "public_records_created": 0
+}

@@ -110,6 +110,22 @@ async def test_public_api_filters_and_does_not_leak_notes(
     assert "notes" not in detail.text and "checked_by" not in detail.text
 
 
+async def test_state_filter_accepts_usps_code_and_full_name(
+    app: FastAPI, client: AsyncClient
+) -> None:
+    await add_service(app)
+    async with app.state.session_factory() as session:
+        location = await session.scalar(select(Location).where(Location.region == "TS"))
+        assert location is not None
+        location.region = "Massachusetts"
+        await session.commit()
+
+    by_code = await client.get("/api/v1/services", params={"state": "MA"})
+    by_name = await client.get("/api/v1/services", params={"state": "Massachusetts"})
+    assert by_code.status_code == 200 and by_code.json()["pagination"]["total"] == 1
+    assert by_name.status_code == 200 and by_name.json()["pagination"]["total"] == 1
+
+
 @pytest.mark.parametrize(
     "status", [VerificationStatus.DRAFT, VerificationStatus.REJECTED, VerificationStatus.ARCHIVED]
 )

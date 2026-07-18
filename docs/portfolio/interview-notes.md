@@ -77,7 +77,9 @@ AI tools assisted with implementation, review checklists, and documentation. Mat
 the repository policy: generated changes were inspected, formatted, type-checked, tested, and
 validated against the running application. AI did not supply or verify resource facts.
 
-## What is the next practical milestone?
+## What is the release decision?
 
-Controlled CSV and JSON import with dry-run preview, row-level errors, duplicate handling,
-permissions, and audit events—without adding autonomous fetching.
+Stop feature development. The repository and local release gates are prepared, but public release
+requires account-owner authorization for Vercel, Render, Neon, and GitHub secrets, plus named human
+verification of records in every covered area. No real record is published merely because an AI
+found a page, and nationwide searchability is never described as comprehensive coverage.

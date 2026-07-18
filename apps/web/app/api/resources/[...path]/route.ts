@@ -21,6 +21,7 @@ async function proxy(
       headers: {
         "content-type":
           request.headers.get("content-type") ?? "application/json",
+        "x-civicsignal-proxy": process.env.PROXY_SHARED_SECRET ?? "",
       },
       body:
         request.method === "GET" || request.method === "HEAD"

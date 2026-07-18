@@ -11,14 +11,15 @@ publication of verified fictional community-resource data.
   concurrency, transactional publication, provenance, freshness tracking, and structured audits.
 - Implemented Argon2 authentication, HTTP-only opaque sessions, CSRF protection, role-based
   authorization, session revocation, bounded public intake, and duplicate-work prevention.
-- Built responsive public/admin interfaces with accessible dialogs and strict TypeScript/Python
-  validation, automated tests, Alembic migrations, Docker Compose, CI security checks, and Render
-  staging configuration.
+- Built an audited source registry, bounded CSV/JSON candidate imports, SSRF-safe retrieval,
+  deterministic duplicate classification, responsive accessible interfaces, strict types, Alembic
+  migrations, Docker Compose, and security-focused CI.
 
 ## Extended portfolio version
 
-CivicSignal explores how a public directory can accept corrections without sacrificing data
-integrity. I built the Next.js frontend, FastAPI API, PostgreSQL schema, immutable governance model,
-verification and freshness workflows, security controls, accessible interaction patterns, automated
-tests, Docker environment, and deployment documentation. The portfolio release uses only curated
-fictional data and makes its operational limitations explicit.
+CivicSignal explores how a public directory can accept corrections and source data without
+sacrificing integrity. I built the Next.js frontend, FastAPI API, PostgreSQL schema, immutable
+governance model, approved-source and draft-only import boundaries, verification and freshness
+workflows, security controls, accessible interaction patterns, automated tests, Docker environment,
+and free-tier deployment documentation. The current local portfolio release uses curated fictional
+data and makes its operational limitations explicit.

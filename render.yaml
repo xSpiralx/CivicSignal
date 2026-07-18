@@ -1,55 +1,26 @@
-databases:
-  - name: civicsignal-staging-db
-    plan: basic-256mb
-    region: ohio
-    postgresMajorVersion: "17"
-    databaseName: civicsignal_staging
-    user: civicsignal_staging
-    ipAllowList: []
-
 services:
-  - type: cron
-    name: civicsignal-stale-detection-staging
+  - type: web
+    name: civicsignal-api
     runtime: docker
-    plan: starter
-    region: ohio
-    schedule: "0 6 * * *"
-    dockerfilePath: ./apps/api/Dockerfile
-    dockerContext: ./apps/api
-    dockerCommand: civicsignal resources detect-stale
-    envVars:
-      - key: ENVIRONMENT
-        value: staging
-      - key: DATABASE_URL
-        fromDatabase:
-          name: civicsignal-staging-db
-          property: connectionString
-      - key: LOG_LEVEL
-        value: INFO
-
-  - type: pserv
-    name: civicsignal-api-staging
-    runtime: docker
-    plan: starter
+    plan: free
     region: ohio
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: ./apps/api
-    dockerCommand: /bin/sh -c "uvicorn civicsignal_api.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"
-    preDeployCommand: alembic upgrade head
+    dockerCommand: /bin/sh -c "alembic upgrade head && uvicorn civicsignal_api.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"
     healthCheckPath: /health/ready
     autoDeployTrigger: checksPass
     envVars:
-      - key: APP_ENV
-        value: staging
       - key: ENVIRONMENT
-        value: staging
+        value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: civicsignal-staging-db
-          property: connectionString
+        sync: false
       - key: ALLOWED_HOSTS
-        value: civicsignal-api-staging
+        sync: false
       - key: CORS_ORIGINS
+        sync: false
+      - key: PUBLIC_FRONTEND_URL
+        sync: false
+      - key: API_PUBLIC_URL
         sync: false
       - key: COOKIE_SECURE
         value: "true"
@@ -60,34 +31,10 @@ services:
       - key: SESSION_IDLE_SECONDS
         value: "1800"
       - key: DEMO_MODE
-        value: "true"
+        value: "false"
       - key: LOG_LEVEL
         value: INFO
-
-  - type: web
-    name: civicsignal-web-staging
-    runtime: docker
-    plan: starter
-    region: ohio
-    dockerfilePath: ./apps/web/Dockerfile
-    dockerContext: ./apps/web
-    healthCheckPath: /api/health
-    autoDeployTrigger: checksPass
-    envVars:
-      - key: NEXT_PUBLIC_APP_ENV
-        value: staging
-      - key: NEXT_PUBLIC_DATA_MODE
-        value: demo
-      - key: API_INTERNAL_URL
-        fromService:
-          type: pserv
-          name: civicsignal-api-staging
-          property: hostport
-      - key: PUBLIC_BASE_URL
+      - key: PROXY_SHARED_SECRET
         sync: false
-      - key: STAGING_ACCESS_USERNAME
+      - key: MAINTENANCE_TOKEN
         sync: false
-      - key: STAGING_ACCESS_PASSWORD
-        generateValue: true
-      - key: NEXT_PUBLIC_EMERGENCY_MESSAGE
-        value: "Fictional staging data only. Contact your local emergency number for immediate danger."

@@ -1,0 +1,32 @@
+name: Production stale detection
+
+on:
+  schedule:
+    - cron: "23 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-stale-detection
+  cancel-in-progress: false
+
+jobs:
+  detect-stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate configuration
+        env:
+          URL: ${{ secrets.PRODUCTION_MAINTENANCE_URL }}
+          TOKEN: ${{ secrets.PRODUCTION_MAINTENANCE_TOKEN }}
+        run: test -n "$URL" && test -n "$TOKEN"
+      - name: Run idempotent stale detection
+        env:
+          URL: ${{ secrets.PRODUCTION_MAINTENANCE_URL }}
+          TOKEN: ${{ secrets.PRODUCTION_MAINTENANCE_TOKEN }}
+        run: >-
+          curl --fail-with-body --silent --show-error
+          --retry 2 --retry-all-errors
+          --connect-timeout 10 --max-time 120
+          -X POST -H "Authorization: Bearer $TOKEN" "$URL"

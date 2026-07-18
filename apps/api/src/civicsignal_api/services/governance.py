@@ -198,6 +198,7 @@ async def publish(
             content.city,
             content.region,
             content.postal_code,
+            content.timezone,
             content.hours,
             content.transportation,
         )
@@ -212,14 +213,14 @@ async def publish(
                 city=content.city,
                 region=content.region,
                 postal_code=content.postal_code,
-                country="US",
+                country=content.country,
                 latitude=None,
                 longitude=None,
                 service_area=content.service_area,
                 transportation=content.transportation,
                 accessibility=content.accessibility,
                 hours=content.hours,
-                timezone="America/New_York",
+                timezone=content.timezone or "UTC",
                 is_active=True,
             )
         )

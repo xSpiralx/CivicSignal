@@ -1,7 +1,11 @@
 from datetime import timedelta
 from typing import Any
 
+import pytest
+from pydantic import ValidationError
+
 from civicsignal_api.models.auth import AdminAccount, Role, RoleName
+from civicsignal_api.schemas.governance import DraftContent
 from civicsignal_api.security import hash_password, utcnow
 
 CONTENT = {
@@ -18,6 +22,13 @@ CONTENT = {
     "source_url": "https://provider.example/services/support",
     "source_organization": "Example Community Network",
 }
+
+
+def test_geography_normalizes_state_and_rejects_unknown_timezone() -> None:
+    content = DraftContent.model_validate({**CONTENT, "region": "massachusetts", "country": "us"})
+    assert content.region == "MA" and content.country == "US"
+    with pytest.raises(ValidationError, match="valid IANA time zone"):
+        DraftContent.model_validate({**CONTENT, "timezone": "America/Imaginary"})
 
 
 async def login_admin(app: Any, client: Any) -> str:
@@ -58,7 +69,14 @@ async def test_versioned_lifecycle_and_publication(app, client) -> None:  # type
     assert created.status_code == 201
     resource = created.json()
     resource_id = resource["id"]
-    updated_content = {**CONTENT, "description": "Updated fictional referral support."}
+    updated_content = {
+        **CONTENT,
+        "description": "Updated fictional referral support.",
+        "city": "Boston",
+        "region": "Massachusetts",
+        "postal_code": "02108",
+        "timezone": "America/New_York",
+    }
     updated = await client.put(
         f"/api/v1/admin/resources/{resource_id}",
         headers={"X-CSRF-Token": csrf},
@@ -92,6 +110,8 @@ async def test_versioned_lifecycle_and_publication(app, client) -> None:  # type
     public = await client.get(f"/api/v1/services/{service_id}")
     assert public.status_code == 200
     assert public.json()["name"] == "Example support line"
+    assert public.json()["locations"][0]["region"] == "MA"
+    assert public.json()["locations"][0]["timezone"] == "America/New_York"
 
 
 async def test_invalid_transition_and_required_reason(app, client) -> None:  # type: ignore[no-untyped-def]

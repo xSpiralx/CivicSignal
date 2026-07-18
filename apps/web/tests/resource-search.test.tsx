@@ -23,7 +23,7 @@ describe("ResourceSearch", () => {
     render(<ResourceSearch />);
     expect(screen.getByText("Loading resources…")).toBeInTheDocument();
     expect(
-      await screen.findByText("No matching resources"),
+      await screen.findByText("No verified listings are available yet"),
     ).toBeInTheDocument();
   });
 
@@ -31,12 +31,15 @@ describe("ResourceSearch", () => {
     const fetchMock = successfulFetch();
     vi.stubGlobal("fetch", fetchMock);
     render(<ResourceSearch />);
-    await screen.findByText("No matching resources");
+    await screen.findByText("No verified listings are available yet");
     fireEvent.change(screen.getByLabelText("What do you need?"), {
       target: { value: "food" },
     });
-    fireEvent.change(screen.getByLabelText("City"), {
+    fireEvent.change(screen.getByLabelText("City or town"), {
       target: { value: "Exampleville" },
+    });
+    fireEvent.change(screen.getByLabelText("State or territory"), {
+      target: { value: "MA" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Search resources" }));
     await waitFor(() =>
@@ -45,6 +48,7 @@ describe("ResourceSearch", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining("city=Exampleville"),
     );
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining("state=MA"));
   });
 
   it("announces API errors", async () => {

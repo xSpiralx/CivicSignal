@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy.sql.base import ExecutableOption
 
+from civicsignal_api.geography import region_search_terms
 from civicsignal_api.models.resource import (
     Category,
     Location,
@@ -166,7 +167,10 @@ async def list_services(
     if city:
         statement = statement.where(Service.locations.any(Location.city.ilike(city)))
     if region:
-        statement = statement.where(Service.locations.any(Location.region.ilike(region)))
+        terms = region_search_terms(region)
+        statement = statement.where(
+            Service.locations.any(or_(*(Location.region.ilike(term) for term in terms)))
+        )
     if postal_code:
         statement = statement.where(Service.locations.any(Location.postal_code == postal_code))
     if language:

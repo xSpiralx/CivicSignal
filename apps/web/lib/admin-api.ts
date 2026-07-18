@@ -53,6 +53,8 @@ export type DraftContent = {
   city: string | null;
   region: string | null;
   postal_code: string | null;
+  country: string;
+  timezone: string | null;
   service_area: string | null;
   hours: string | null;
   transportation: string | null;

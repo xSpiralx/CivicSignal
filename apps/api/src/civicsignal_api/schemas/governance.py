@@ -1,7 +1,10 @@
 import uuid
 from datetime import datetime
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
+
+from civicsignal_api.geography import canonical_us_region
 
 
 class DraftContent(BaseModel):
@@ -25,6 +28,8 @@ class DraftContent(BaseModel):
     city: str | None = Field(default=None, max_length=120)
     region: str | None = Field(default=None, max_length=120)
     postal_code: str | None = Field(default=None, max_length=30)
+    country: str = Field(default="US", pattern=r"^[A-Za-z]{2}$")
+    timezone: str | None = Field(default=None, max_length=100)
     service_area: str | None = Field(default=None, max_length=2000)
     hours: str | None = Field(default=None, max_length=2000)
     transportation: str | None = Field(default=None, max_length=2000)
@@ -37,6 +42,33 @@ class DraftContent(BaseModel):
     source_notes: str | None = Field(default=None, max_length=2000)
     source_public: bool = True
     source_supports_changed_fields: bool = True
+
+    @field_validator("region")
+    @classmethod
+    def normalize_us_region(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = " ".join(value.strip().split())
+        return canonical_us_region(cleaned) or cleaned
+
+    @field_validator("country")
+    @classmethod
+    def normalize_country(cls, value: str) -> str:
+        return value.strip().upper()
+
+    @field_validator("timezone")
+    @classmethod
+    def validate_timezone(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        cleaned = value.strip()
+        if not cleaned:
+            return None
+        try:
+            ZoneInfo(cleaned)
+        except ZoneInfoNotFoundError as exc:
+            raise ValueError("timezone must be a valid IANA time zone") from exc
+        return cleaned
 
 
 class DraftCreate(BaseModel):

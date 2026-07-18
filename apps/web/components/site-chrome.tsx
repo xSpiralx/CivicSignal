@@ -31,6 +31,12 @@ export function SiteHeader() {
           >
             Find resources
           </Link>
+          <Link
+            className="hidden rounded-full px-3 py-2 hover:bg-white/70 md:block"
+            href="/coverage"
+          >
+            Coverage
+          </Link>
           <a
             className="hidden rounded-full px-3 py-2 hover:bg-white/70 sm:block"
             href={repository}
@@ -60,6 +66,10 @@ export function SiteFooter() {
           aria-label="Footer navigation"
           className="grid grid-cols-2 gap-x-6 gap-y-2 font-semibold"
         >
+          <a href="/coverage">Coverage</a>
+          <a href="/data-sources">Data sources</a>
+          <a href="/verification">Verification</a>
+          <a href="/about">About</a>
           <a href="/privacy">Privacy</a>
           <a href="/security">Security</a>
           <a href="/accessibility">Accessibility</a>
@@ -67,7 +77,9 @@ export function SiteFooter() {
         </nav>
       </div>
       <p className="mt-4 text-center text-xs text-[var(--muted)]">
-        Portfolio-stage release candidate · Fictional data · Apache-2.0
+        {process.env.NEXT_PUBLIC_DATA_MODE === "nationwide-public"
+          ? "Nationwide directory · Verified coverage varies by place · Apache-2.0"
+          : "Portfolio-stage release candidate · Fictional data · Apache-2.0"}
       </p>
     </footer>
   );

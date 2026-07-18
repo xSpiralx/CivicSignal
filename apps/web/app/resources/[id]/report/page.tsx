@@ -94,6 +94,12 @@ export default function CorrectionPage() {
           Reports are reviewed before changes are made. Submitting this form
           does not immediately alter the listing.
         </p>
+        <p className="mt-3 text-sm text-[var(--muted)]">
+          Are you an organization representative? You may use this same form to
+          request an update and identify your role in the description. A claim
+          of representation is never accepted automatically; an administrator
+          must verify it before any ownership or publication decision.
+        </p>
         <div className="mt-5 rounded-2xl bg-amber-50 p-4">
           <strong>Protect your privacy.</strong> Do not include medical or legal
           records, immigration or abuse narratives, crisis details, passwords,

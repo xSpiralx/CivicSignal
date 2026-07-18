@@ -25,8 +25,9 @@ export default function Home() {
               Find community support with clarity and care.
             </h1>
             <p className="mt-6 max-w-2xl text-lg text-[var(--muted)] sm:text-xl">
-              Search a public directory that shows where information came from,
-              when it was checked, and when you should confirm details directly.
+              Search by state, territory, city, town, or postal code. Every
+              listing shows where its information came from, when it was
+              checked, and when you should confirm details directly.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link

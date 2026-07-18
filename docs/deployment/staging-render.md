@@ -1,4 +1,9 @@
-# Private staging on Render
+# Optional paid private staging on Render
+
+> This document describes an optional paid staging topology and is **not** the current
+> `render.yaml`. The checked-in Blueprint now defines only the free release-candidate API described
+> in `docs/operations/free-hosting-decision.md`. Do not create the topology below without explicit
+> payment authorization.
 
 The selected staging topology uses a public Next.js web service, a private FastAPI service, and a
 paid managed PostgreSQL database in one Render region. Browser traffic reaches only Next.js; its
@@ -12,9 +17,8 @@ staging banner.
 ## Provisioning
 
 1. Connect the CivicSignal GitHub repository to Render.
-2. Create a Blueprint from `render.yaml` and review every resource before approving it. The file
-   selects paid Starter web/private services and a paid Basic PostgreSQL instance; do not approve
-   creation until the owner accepts the displayed monthly estimate.
+2. Create a separate private Blueprint or configure the services manually. Do not reuse the current
+   free `render.yaml`. Review every resource and displayed monthly estimate before approval.
 3. Provide `CORS_ORIGINS` and `PUBLIC_BASE_URL` using the assigned HTTPS web URL.
 4. Set `STAGING_ACCESS_USERNAME` to a non-identifying tester username. Render generates the access
    password; copy it once into the team's approved password manager.

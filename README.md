@@ -28,7 +28,9 @@ and freshness without being exposed to internal workflow details.
 | Fictional demonstration seed                       | Optional                   | Optional                      |
 | Secure administrator access and account management | Included                   | Included                      |
 | Corrections, revisions, verification, and audit    | Included                   | Included                      |
-| AI, scraping, live availability                    | Not implemented            | Not implemented               |
+| Governed source registry and draft-only imports    | Included                   | Included                      |
+| U.S. state, territory, city/town, and postal search | Included                   | Included                      |
+| AI recommendations or live availability            | Not implemented            | Not implemented               |
 
 Public results require an active organization and service, at least one source, and a latest verification state of `verified` or `needs_reverification`. Draft, rejected, archived, inactive, and sourceless records are excluded. A stale label is not a confidence score and verification does not promise availability.
 
@@ -59,10 +61,14 @@ Stop with `docker compose down`. Reset deliberately with `docker compose down -v
 - HTTP-only opaque sessions, Argon2 passwords, CSRF protection, RBAC, and revocation.
 - Transactional verified publication, provenance, freshness calculation, and structured audit events.
 - Deterministic stale detection with advisory locking and duplicate active-task prevention.
-- Optional, human-review-gated [Washington, DC real-data pilot](docs/data/washington-dc-pilot.md)
-  with official-source provenance and 14-day re-verification windows.
+- Audited approved-source registry plus bounded CSV/JSON imports, SSRF-safe retrieval, deterministic
+  deduplication, and human-governed candidates for nationwide, state, county, and local coverage.
+  Candidates cannot bypass separate draft, verification, and publication decisions.
+- Nationwide U.S. geography support covering all 50 states, D.C., and populated territories, with
+  state-name/code normalization and explicit city/town, postal-code, and service-area filtering.
 - Responsive semantic public/admin interfaces and keyboard-tested accessible dialogs.
-- FastAPI, Next.js, PostgreSQL, Alembic, Docker Compose, Render, and security-focused CI.
+- FastAPI, Next.js, PostgreSQL, Alembic, Docker Compose, free-tier deployment manifests, and
+  security-focused CI.
 
 ### Direct local administrator quick start
 
@@ -93,7 +99,26 @@ with `cd apps/api && .venv/bin/pytest` and frontend checks with `cd apps/web && 
 Run the freshness job safely with `docker compose exec api civicsignal resources detect-stale
 --dry-run`; remove `--dry-run` to create idempotent re-verification work. CivicSignal is not a public
 beta or v1.0. The current release blockers are tracked in
-[`docs/release/beta-checklist.md`](docs/release/beta-checklist.md).
+[`docs/release/v1.0-checklist.md`](docs/release/v1.0-checklist.md).
+
+### Prepare the official 2026 HRSA review queue
+
+The source-specific preparation command accepts the official HRSA CSV, keeps only active rows with a
+2026 source-record date, projects factual fields, and writes bounded JSON candidate files under the
+ignored `var/imports/hrsa-2026` directory. It does not approve a source, import into PostgreSQL, or
+publish a listing.
+
+```bash
+cd apps/api
+.venv/bin/civicsignal sources prepare-hrsa-2026 \
+  --input /path/to/official-hrsa.csv \
+  --output ../../var/imports/hrsa-2026 \
+  --source-updated-at 2026-07-18 \
+  --retrieved-at 2026-07-18T21:30:00Z
+```
+
+The reviewed snapshot evidence and checksum are in
+[`docs/data-sources/proposals/hrsa-health-centers-2026.json`](docs/data-sources/proposals/hrsa-health-centers-2026.json).
 
 ## Architecture
 

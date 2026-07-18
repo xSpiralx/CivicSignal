@@ -1,3 +1,4 @@
+import hmac
 import logging
 import time
 from collections import Counter
@@ -58,4 +59,18 @@ async def request_size_middleware(
                 "request_id": getattr(request.state, "request_id", None),
             },
         )
+    return await call_next(request)
+
+
+async def controlled_proxy_middleware(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
+    expected = request.app.state.settings.proxy_shared_secret
+    if expected and request.url.path.startswith("/api/v1/"):
+        supplied = request.headers.get("X-CivicSignal-Proxy", "")
+        if not hmac.compare_digest(supplied, expected):
+            return JSONResponse(
+                status_code=403,
+                content={"error": {"code": "controlled_origin_required", "message": "Forbidden"}},
+            )
     return await call_next(request)
