@@ -30,9 +30,12 @@ export type DraftContent = {
   service_name: string;
   description: string;
   eligibility: string | null;
+  required_documents: string | null;
+  cost_information: string | null;
   languages: string[];
   accessibility: string | null;
   emergency_availability: boolean;
+  remote_service_available: boolean;
   categories: string[];
   contact_phone: string | null;
   contact_email: string | null;
@@ -48,6 +51,11 @@ export type DraftContent = {
   source_name: string;
   source_url: string;
   source_organization: string;
+  source_type: string;
+  source_retrieved_at: string | null;
+  source_notes: string | null;
+  source_public: boolean;
+  source_supports_changed_fields: boolean;
 };
 export type GovernedResource = {
   id: string;
@@ -97,6 +105,19 @@ export type ReverificationTask = {
   notes: string | null;
   version: number;
   created_at: string;
+};
+export type Proposal = {
+  task_id: string;
+  task_version: number;
+  resource_id: string;
+  published_revision: number;
+  proposed_revision: number;
+  published_content: DraftContent;
+  proposed_content: DraftContent;
+  changed_fields: string[];
+  blocking_errors: string[];
+  warnings: string[];
+  ready: boolean;
 };
 
 let csrfToken = "";

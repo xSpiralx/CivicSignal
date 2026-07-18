@@ -135,8 +135,8 @@ async def publish(
             name=content.service_name,
             description=content.description,
             eligibility=content.eligibility,
-            required_documents=None,
-            cost_information=None,
+            required_documents=content.required_documents,
+            cost_information=content.cost_information,
             languages=", ".join(content.languages),
             accessibility=content.accessibility,
             application_instructions=content.application_instructions,
@@ -171,6 +171,8 @@ async def publish(
             content.accessibility,
         )
         service.application_instructions = content.application_instructions
+        service.required_documents = content.required_documents
+        service.cost_information = content.cost_information
         service.organization.public_name = content.organization_name
         service.organization.description = content.organization_description
         service.organization.organization_type = content.organization_type

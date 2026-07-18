@@ -6,15 +6,16 @@ CivicSignal addresses a deceptively hard public-interest problem: people need cl
 
 ## Current capabilities
 
-| Capability | Hosted edition | Self-hosted community edition |
-| --- | --- | --- |
-| Public browsing and deterministic search | Supported by same codebase | Supported |
-| Source references and verification dates | Supported | Supported |
-| Docker Compose and PostgreSQL | Deployment choice | Supported |
-| Branding and emergency message | Environment configuration | Environment configuration |
-| Fictional demonstration seed | Optional | Optional |
-| Secure administrator access and account management | Included | Included |
-| Resource governance, AI, scraping, live availability | Not implemented | Not implemented |
+| Capability                                         | Hosted edition             | Self-hosted community edition |
+| -------------------------------------------------- | -------------------------- | ----------------------------- |
+| Public browsing and deterministic search           | Supported by same codebase | Supported                     |
+| Source references and verification dates           | Supported                  | Supported                     |
+| Docker Compose and PostgreSQL                      | Deployment choice          | Supported                     |
+| Branding and emergency message                     | Environment configuration  | Environment configuration     |
+| Fictional demonstration seed                       | Optional                   | Optional                      |
+| Secure administrator access and account management | Included                   | Included                      |
+| Resource governance workflows                      | Included                   | Included                      |
+| AI, scraping, live availability                    | Not implemented            | Not implemented               |
 
 Public results require an active organization and service, at least one source, and a latest verification state of `verified` or `needs_reverification`. Draft, rejected, archived, inactive, and sourceless records are excluded. A stale label is not a confidence score and verification does not promise availability.
 
@@ -33,7 +34,7 @@ docker compose up --build -d
 Open <http://localhost:3001/resources>; API documentation is at <http://localhost:8001/docs>. The demo is fictional and uses reserved `.example` domains.
 
 ```bash
-curl 'http://localhost:8000/api/v1/services?category=food-assistance&city=Exampleville'
+curl 'http://localhost:8001/api/v1/services?category=food-assistance&city=Exampleville'
 ```
 
 Stop with `docker compose down`. Reset deliberately with `docker compose down -v`. See [development](docs/development.md), [self-hosting](docs/deployment/self-hosting.md), and [architecture](docs/architecture.md).
@@ -109,6 +110,6 @@ Coding tools may assist, but contributors must disclose material use and remain 
 
 ## Project status and roadmap
 
-This is `v0.1.0-alpha` preparation—not a production-readiness, security, compliance, or accuracy claim. Screenshots are intentionally deferred until the Docker demo is visually reviewed. Known limitations include fictional-only seed data, no secure admin interface, basic database search, process-local metrics, and no production rate limiter. The [roadmap](ROADMAP.md) covers the next milestone: secure administration, controlled ingestion, re-verification workflows, and stale-information automation.
+This is `v0.1.0-alpha` preparation—not a production-readiness, security, compliance, or accuracy claim. Screenshots are intentionally deferred until the Docker demo is visually reviewed. Known limitations include fictional-only seed data, incomplete browser/accessibility validation, basic database search, process-local metrics, and no production rate limiter. The [roadmap](ROADMAP.md) covers the next milestone: controlled import with dry-run and row-level validation.
 
 Contributions are welcome under the Apache License 2.0; read [CONTRIBUTING.md](CONTRIBUTING.md), [GOVERNANCE.md](GOVERNANCE.md), and the [Code of Conduct](CODE_OF_CONDUCT.md).

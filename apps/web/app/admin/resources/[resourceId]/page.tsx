@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { ActionDialog } from "@/components/dialogs/action-dialog";
 import { GovernedResource, adminFetch } from "@/lib/admin-api";
 
 const actions: Record<
@@ -41,40 +42,48 @@ function ResourceDetail() {
   const [item, setItem] = useState<GovernedResource | null>(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [selected, setSelected] = useState<{
+    action: string;
+    label: string;
+    reason?: boolean;
+    verify?: boolean;
+  } | null>(null);
+  const [reason, setReason] = useState("");
+  const [evidence, setEvidence] = useState("");
+  const [nextDue, setNextDue] = useState("");
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     void adminFetch<GovernedResource>(`resources/${resourceId}`)
       .then(setItem)
       .catch((e) => setError(e.message));
   }, [resourceId]);
-  async function act(action: string, needsReason?: boolean, verify?: boolean) {
+  async function act() {
     if (!item) return;
-    const reason = needsReason
-      ? window.prompt("Provide the required reason")
-      : null;
-    if (needsReason && !reason) return;
-    const evidence = verify ? window.prompt("Evidence URL reviewed") : null;
-    const next_due_at = verify
-      ? window.prompt("Next verification date (YYYY-MM-DD)")
-      : null;
+    if (!selected) return;
+    setLoading(true);
     try {
       const updated = await adminFetch<GovernedResource>(
-        `resources/${resourceId}/${action}`,
+        `resources/${resourceId}/${selected.action}`,
         {
           method: "POST",
           body: JSON.stringify({
             expected_revision: item.revision,
-            reason,
+            reason: reason || null,
             evidence: evidence ? [evidence] : [],
-            next_due_at: next_due_at
-              ? new Date(next_due_at).toISOString()
-              : null,
+            next_due_at: nextDue ? new Date(nextDue).toISOString() : null,
           }),
         },
       );
       setItem(updated);
       setNotice(`Resource moved to ${updated.state.replaceAll("_", " ")}.`);
+      setSelected(null);
+      setReason("");
+      setEvidence("");
+      setNextDue("");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Action failed");
+    } finally {
+      setLoading(false);
     }
   }
   if (!item) return <p aria-busy="true">Loading resource…</p>;
@@ -105,7 +114,7 @@ function ResourceDetail() {
             <button
               className="rounded-full bg-white px-4 py-2 font-bold shadow-sm"
               key={entry.action}
-              onClick={() => void act(entry.action, entry.reason, entry.verify)}
+              onClick={() => setSelected(entry)}
             >
               {entry.label}
             </button>
@@ -120,6 +129,69 @@ function ResourceDetail() {
           )}
         </div>
       </section>
+      <ActionDialog
+        open={selected !== null}
+        title={selected?.label ?? "Resource action"}
+        description="Review this governed action before continuing. The server validates state, permissions, and the expected revision."
+        submitLabel={selected?.label ?? "Continue"}
+        destructive={
+          selected?.action === "archive" || selected?.action === "reject"
+        }
+        loading={loading}
+        error={error}
+        onClose={() => setSelected(null)}
+        onSubmit={act}
+      >
+        {selected?.reason && (
+          <label className="grid gap-2 font-bold">
+            Required reason
+            <textarea
+              autoFocus
+              required
+              minLength={3}
+              maxLength={2000}
+              rows={4}
+              className="rounded-xl border bg-white p-3 font-normal"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+            />
+          </label>
+        )}
+        {selected?.verify && (
+          <>
+            <label className="grid gap-2 font-bold">
+              Evidence URL
+              <input
+                autoFocus
+                required
+                type="url"
+                className="rounded-xl border bg-white p-3 font-normal"
+                value={evidence}
+                onChange={(e) => setEvidence(e.target.value)}
+              />
+            </label>
+            <label className="grid gap-2 font-bold">
+              Next verification date
+              <input
+                required
+                type="date"
+                className="rounded-xl border bg-white p-3 font-normal"
+                value={nextDue}
+                onChange={(e) => setNextDue(e.target.value)}
+              />
+            </label>
+          </>
+        )}
+        {(selected?.action === "archive" || selected?.action === "reject") && (
+          <label className="flex items-start gap-3">
+            <input type="checkbox" required />
+            <span>
+              I understand this action removes or rejects this resource from its
+              current workflow.
+            </span>
+          </label>
+        )}
+      </ActionDialog>
       <section className="glass-subtle rounded-3xl p-6">
         <h2 className="text-xl font-bold">Current revision</h2>
         <dl className="mt-4 grid gap-3">

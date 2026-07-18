@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { ActionDialog } from "@/components/dialogs/action-dialog";
 import { SafeSession, adminFetch } from "@/lib/admin-api";
 
 export default function SessionsPage() {
@@ -10,6 +11,8 @@ export default function SessionsPage() {
 function Sessions() {
   const [items, setItems] = useState<SafeSession[]>([]);
   const [error, setError] = useState("");
+  const [selected, setSelected] = useState<SafeSession | null>(null);
+  const [loading, setLoading] = useState(false);
   const load = () =>
     adminFetch<SafeSession[]>("sessions")
       .then(setItems)
@@ -45,13 +48,7 @@ function Sessions() {
               {!item.current && (
                 <button
                   className="rounded-full border border-red-300 px-4 py-2 font-bold text-red-800"
-                  onClick={async () => {
-                    if (!window.confirm("Revoke this session?")) return;
-                    await adminFetch(`sessions/${item.id}`, {
-                      method: "DELETE",
-                    });
-                    load();
-                  }}
+                  onClick={() => setSelected(item)}
                 >
                   Revoke
                 </button>
@@ -60,6 +57,34 @@ function Sessions() {
           </article>
         ))}
       </div>
+      <ActionDialog
+        open={selected !== null}
+        title="Revoke administrator session?"
+        description="Revocation takes effect immediately and cannot be undone."
+        submitLabel="Revoke session"
+        destructive
+        loading={loading}
+        error={error}
+        onClose={() => setSelected(null)}
+        onSubmit={async () => {
+          if (!selected) return;
+          setLoading(true);
+          try {
+            await adminFetch(`sessions/${selected.id}`, { method: "DELETE" });
+            setSelected(null);
+            await load();
+          } catch (e) {
+            setError(e instanceof Error ? e.message : "Revocation failed");
+          } finally {
+            setLoading(false);
+          }
+        }}
+      >
+        <label className="flex items-start gap-3">
+          <input type="checkbox" required />
+          <span>I understand this session will immediately lose access.</span>
+        </label>
+      </ActionDialog>
     </section>
   );
 }

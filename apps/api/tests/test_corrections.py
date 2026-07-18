@@ -120,16 +120,46 @@ async def test_updated_confirmation_publishes_new_revision(app, client) -> None:
         json={"expected_version": 1},
     )
     task_id = escalated.json()["task_id"]
+    proposal = await client.get(f"/api/v1/admin/reverification/{task_id}/proposal")
+    assert proposal.status_code == 200
+    assert proposal.json()["published_revision"] == proposal.json()["proposed_revision"] == 1
+    proposed_content = {
+        **CONTENT,
+        "hours": "Monday–Friday, 9:00–18:00",
+        "categories": ["Community support"],
+        "contact_phone": "555-0100",
+        "service_area": "Example County",
+    }
+    saved = await client.post(
+        f"/api/v1/admin/reverification/{task_id}/proposal",
+        headers={"X-CSRF-Token": csrf},
+        json={
+            "expected_task_version": 1,
+            "expected_revision": 1,
+            "content": proposed_content,
+        },
+    )
+    assert saved.status_code == 200
+    assert saved.json()["proposed_revision"] == 2 and saved.json()["ready"] is True
+    stale_save = await client.post(
+        f"/api/v1/admin/reverification/{task_id}/proposal",
+        headers={"X-CSRF-Token": csrf},
+        json={
+            "expected_task_version": 1,
+            "expected_revision": 1,
+            "content": proposed_content,
+        },
+    )
+    assert stale_save.status_code == 409
     updated = await client.post(
         f"/api/v1/admin/reverification/{task_id}/updated-confirmed",
         headers={"X-CSRF-Token": csrf},
         json={
-            "expected_version": 1,
-            "expected_revision": 1,
+            "expected_version": 2,
+            "expected_revision": 2,
             "evidence_summary": "Provider source confirms the new closing time.",
             "source_references": ["https://provider.example/services/support"],
             "next_due_at": due,
-            "proposed_content": {**CONTENT, "hours": "Monday–Friday, 9:00–18:00"},
         },
     )
     assert updated.status_code == 200, updated.text

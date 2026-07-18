@@ -13,7 +13,8 @@ Source-aware data model, read-only API, deterministic search, accessible public 
 
 ## Next milestone
 
-Secure administrator authentication and authorization, controlled dataset import/export, review queues, append-only verification actions, automated stale detection, correction workflows, audit history, and production rate limiting.
+Controlled CSV and JSON import with dry-run preview, row-level validation, duplicate handling,
+permission checks, and audit history. Approved-source fetching remains a separate later milestone.
 
 ## Later, only after safety review
 

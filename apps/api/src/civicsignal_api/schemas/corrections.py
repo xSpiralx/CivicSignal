@@ -104,3 +104,23 @@ class ReverificationAction(BaseModel):
     next_due_at: datetime | None = None
     expected_revision: int | None = Field(default=None, ge=1)
     proposed_content: DraftContent | None = None
+
+
+class ProposalSave(BaseModel):
+    expected_task_version: int = Field(ge=1)
+    expected_revision: int = Field(ge=1)
+    content: DraftContent
+
+
+class ProposalView(BaseModel):
+    task_id: uuid.UUID
+    task_version: int
+    resource_id: uuid.UUID
+    published_revision: int
+    proposed_revision: int
+    published_content: DraftContent
+    proposed_content: DraftContent
+    changed_fields: list[str]
+    blocking_errors: list[str]
+    warnings: list[str]
+    ready: bool

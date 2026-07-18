@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { ActionDialog } from "@/components/dialogs/action-dialog";
 import { Account, RoleInfo, SafeSession, adminFetch } from "@/lib/admin-api";
 
 export default function AccountPage() {
@@ -15,6 +16,8 @@ function Details() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [roles, setRoles] = useState<RoleInfo[]>([]);
+  const [dialog, setDialog] = useState<"toggle" | "sessions" | null>(null);
+  const [loading, setLoading] = useState(false);
   const load = () => {
     adminFetch<Account>(`accounts/${accountId}`)
       .then(setAccount)
@@ -30,16 +33,13 @@ function Details() {
   if (error) return <p role="alert">{error}</p>;
   if (!account) return <p aria-busy="true">Loading account…</p>;
   async function toggle() {
-    if (
-      !window.confirm(
-        `${account?.is_active ? "Disable" : "Enable"} this account?`,
-      )
-    )
-      return;
+    setLoading(true);
     await adminFetch(`accounts/${accountId}`, {
       method: "PATCH",
       body: JSON.stringify({ is_active: !account?.is_active }),
     });
+    setDialog(null);
+    setLoading(false);
     load();
   }
   async function updateProfile(event: FormEvent<HTMLFormElement>) {
@@ -134,26 +134,72 @@ function Details() {
         <div className="mt-6 flex flex-wrap gap-3">
           <button
             className="rounded-full border border-red-300 px-4 py-2 font-bold text-red-800"
-            onClick={toggle}
+            onClick={() => setDialog("toggle")}
           >
             {account.is_active ? "Disable account" : "Enable account"}
           </button>
           <button
             className="rounded-full border px-4 py-2 font-bold"
-            onClick={async () => {
-              if (
-                !window.confirm("Revoke every active session for this account?")
-              )
-                return;
-              await adminFetch(`accounts/${accountId}/sessions`, {
-                method: "DELETE",
-              });
-              load();
-            }}
+            onClick={() => setDialog("sessions")}
           >
             Revoke all sessions
           </button>
         </div>
+        <ActionDialog
+          open={dialog === "toggle"}
+          title={
+            account.is_active
+              ? "Disable administrator account?"
+              : "Enable administrator account?"
+          }
+          description={
+            account.is_active
+              ? "The account will be denied access and its active sessions will be revoked."
+              : "The account will be allowed to sign in with its assigned roles."
+          }
+          submitLabel={account.is_active ? "Disable account" : "Enable account"}
+          destructive={account.is_active}
+          loading={loading}
+          error={error}
+          onClose={() => setDialog(null)}
+          onSubmit={toggle}
+        >
+          <label className="flex items-start gap-3">
+            <input type="checkbox" required />
+            <span>
+              I reviewed the account and understand the access change.
+            </span>
+          </label>
+        </ActionDialog>
+        <ActionDialog
+          open={dialog === "sessions"}
+          title="Revoke all account sessions?"
+          description="Every active session for this account will immediately lose access."
+          submitLabel="Revoke all sessions"
+          destructive
+          loading={loading}
+          error={error}
+          onClose={() => setDialog(null)}
+          onSubmit={async () => {
+            setLoading(true);
+            try {
+              await adminFetch(`accounts/${accountId}/sessions`, {
+                method: "DELETE",
+              });
+              setDialog(null);
+              load();
+            } catch (e) {
+              setError(e instanceof Error ? e.message : "Revocation failed");
+            } finally {
+              setLoading(false);
+            }
+          }}
+        >
+          <label className="flex items-start gap-3">
+            <input type="checkbox" required />
+            <span>I understand all active sessions will be revoked.</span>
+          </label>
+        </ActionDialog>
       </section>
       <section className="glass-subtle rounded-3xl p-6">
         <h2 className="text-xl font-bold">Profile and roles</h2>

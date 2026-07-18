@@ -6,6 +6,8 @@
   network/resource rate limits, and audit events.
 - Add permissioned correction triage and operational re-verification queues, outcomes, and linked
   report resolution.
+- Add immutable proposed-revision editing, server readiness checks, source provenance, comparison,
+  verified publication, and accessible dialogs for administrative workflow actions.
 
 - Add deterministic, idempotent stale detection with dry-run support, audit events, and one active
   re-verification task per service.
