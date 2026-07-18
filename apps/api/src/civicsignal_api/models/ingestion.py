@@ -27,6 +27,8 @@ def enum_values(items: type[enum.Enum]) -> list[str]:
 class SourceApprovalStatus(str, enum.Enum):
     PROPOSED = "proposed"
     UNDER_REVIEW = "under_review"
+    LICENSE_REVIEW = "license_review"
+    TECHNICAL_REVIEW = "technical_review"
     APPROVED = "approved"
     RESTRICTED = "restricted"
     REJECTED = "rejected"
@@ -35,6 +37,8 @@ class SourceApprovalStatus(str, enum.Enum):
 
 class ImportBatchStatus(str, enum.Enum):
     PENDING = "pending"
+    RUNNING = "running"
+    PAUSED = "paused"
     VALIDATED = "validated"
     NEEDS_REVIEW = "needs_review"
     CANCELLED = "cancelled"
@@ -43,10 +47,19 @@ class ImportBatchStatus(str, enum.Enum):
 
 
 class CandidateReviewStatus(str, enum.Enum):
-    PENDING = "pending"
+    IMPORTED = "imported"
+    NEEDS_NORMALIZATION = "needs_normalization"
+    NEEDS_SOURCE_REVIEW = "needs_source_review"
+    NEEDS_DUPLICATE_REVIEW = "needs_duplicate_review"
+    NEEDS_CONTENT_REVIEW = "needs_content_review"
+    READY_FOR_REVIEW = "ready_for_review"
+    CLAIMED = "claimed"
     ACCEPTED_AS_DRAFT = "accepted_as_draft"
+    MERGED = "merged"
     REJECTED = "rejected"
-    CONFLICT = "conflict"
+    DEFERRED = "deferred"
+    SUPERSEDED = "superseded"
+    IMPORT_ERROR = "import_error"
 
 
 class ApprovedSource(Base):
@@ -63,18 +76,27 @@ class ApprovedSource(Base):
     name: Mapped[str] = mapped_column(String(240))
     publishing_organization: Mapped[str] = mapped_column(String(240))
     source_url: Mapped[str] = mapped_column(String(2048))
+    download_url: Mapped[str | None] = mapped_column(String(2048))
     source_type: Mapped[str] = mapped_column(String(80))
     geographic_scope: Mapped[str] = mapped_column(String(240))
+    jurisdiction: Mapped[str | None] = mapped_column(String(240))
+    states_covered: Mapped[list[str]] = mapped_column(JSON, default=list)
+    localities_covered: Mapped[list[str]] = mapped_column(JSON, default=list)
     resource_categories: Mapped[list[str]] = mapped_column(JSON, default=list)
     license_name: Mapped[str | None] = mapped_column(String(240))
     license_url: Mapped[str | None] = mapped_column(String(2048))
     terms_url: Mapped[str | None] = mapped_column(String(2048))
     attribution_requirement: Mapped[str | None] = mapped_column(Text)
+    redistribution_permitted: Mapped[bool] = mapped_column(Boolean, default=False)
+    modification_permitted: Mapped[bool] = mapped_column(Boolean, default=False)
     automation_permission: Mapped[bool] = mapped_column(Boolean, default=False)
     rate_limit: Mapped[str | None] = mapped_column(String(240))
     allowed_hosts: Mapped[list[str]] = mapped_column(JSON, default=list)
     last_legal_review_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     last_technical_review_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    latest_source_update_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    latest_successful_retrieval_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    freshness_policy: Mapped[str | None] = mapped_column(Text)
     approval_status: Mapped[SourceApprovalStatus] = mapped_column(
         Enum(SourceApprovalStatus, native_enum=False, values_callable=enum_values),
         default=SourceApprovalStatus.PROPOSED,
@@ -118,15 +140,23 @@ class ImportBatch(Base):
     license_snapshot: Mapped[str | None] = mapped_column(Text)
     attribution_snapshot: Mapped[str | None] = mapped_column(Text)
     content_hash: Mapped[str] = mapped_column(String(64), index=True)
+    idempotency_key: Mapped[str] = mapped_column(String(160), unique=True, index=True)
     importer_version: Mapped[str] = mapped_column(String(40))
     original_filename: Mapped[str | None] = mapped_column(String(240))
     row_count: Mapped[int] = mapped_column(Integer, default=0)
     accepted_count: Mapped[int] = mapped_column(Integer, default=0)
     rejected_count: Mapped[int] = mapped_column(Integer, default=0)
+    processed_count: Mapped[int] = mapped_column(Integer, default=0)
+    failed_count: Mapped[int] = mapped_column(Integer, default=0)
+    checkpoint_row: Mapped[int] = mapped_column(Integer, default=0)
+    resume_token: Mapped[str | None] = mapped_column(String(160), unique=True)
+    cancellation_requested: Mapped[bool] = mapped_column(Boolean, default=False)
     validation_result: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     review_decision: Mapped[str | None] = mapped_column(Text)
     created_by_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("admin_accounts.id"), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
@@ -145,12 +175,31 @@ class CandidateResource(Base):
     )
     source_identifier: Mapped[str] = mapped_column(String(240))
     content: Mapped[dict[str, Any]] = mapped_column(JSON)
+    raw_content: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    source_url: Mapped[str | None] = mapped_column(String(2048))
+    source_content_hash: Mapped[str] = mapped_column(String(64), index=True)
+    source_record_updated_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), index=True
+    )
+    dataset_updated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
+    retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    city: Mapped[str | None] = mapped_column(String(120), index=True)
+    county: Mapped[str | None] = mapped_column(String(160), index=True)
+    region: Mapped[str | None] = mapped_column(String(120), index=True)
+    postal_code: Mapped[str | None] = mapped_column(String(30), index=True)
+    categories: Mapped[list[str]] = mapped_column(JSON, default=list)
+    service_area_type: Mapped[str] = mapped_column(String(40), default="local", index=True)
+    nationwide: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    remote: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
+    risk_classification: Mapped[str] = mapped_column(String(30), default="standard", index=True)
+    conflict_status: Mapped[str] = mapped_column(String(50), default="none", index=True)
+    validation_status: Mapped[str] = mapped_column(String(50), default="valid", index=True)
     normalized_fingerprint: Mapped[str] = mapped_column(String(64), index=True)
     duplicate_classification: Mapped[str] = mapped_column(String(50), index=True)
     validation_result: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     review_status: Mapped[CandidateReviewStatus] = mapped_column(
         Enum(CandidateReviewStatus, native_enum=False, values_callable=enum_values),
-        default=CandidateReviewStatus.PENDING,
+        default=CandidateReviewStatus.READY_FOR_REVIEW,
         index=True,
     )
     review_decision: Mapped[str | None] = mapped_column(Text)
@@ -160,6 +209,7 @@ class CandidateResource(Base):
     governed_resource_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("governed_resources.id", ondelete="SET NULL"), index=True
     )
+    version: Mapped[int] = mapped_column(Integer, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()

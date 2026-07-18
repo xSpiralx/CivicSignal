@@ -81,6 +81,8 @@ async def test_source_requires_governed_decision_before_automation(app, client) 
             "license_url": "https://data.example.gov/terms",
             "terms_url": "https://data.example.gov/terms",
             "attribution_requirement": "Source: Example government",
+            "redistribution_permitted": True,
+            "modification_permitted": True,
             "last_legal_review_at": datetime.now(UTC).isoformat(),
             "last_technical_review_at": datetime.now(UTC).isoformat(),
         },
@@ -112,6 +114,8 @@ async def test_import_dry_run_creates_no_records_and_acceptance_creates_only_dra
             resource_categories=["food assistance"],
             license_name="Public domain test fixture",
             automation_permission=True,
+            redistribution_permitted=True,
+            modification_permitted=True,
             allowed_hosts=["data.example.gov"],
             approval_status=SourceApprovalStatus.APPROVED,
             enabled=True,
@@ -132,9 +136,13 @@ async def test_import_dry_run_creates_no_records_and_acceptance_creates_only_dra
                         "organization_type": "government",
                         "service_name": "Example Support",
                         "description": "Fictional service for import testing.",
+                        "city": "Exampleville",
+                        "region": "MA",
+                        "categories": ["Food"],
                         "source_name": "Example dataset",
                         "source_url": "https://data.example.gov/resources/1",
                         "source_organization": "Example government",
+                        "source_record_updated_at": "2026-07-18",
                     }
                 ]
             )
@@ -160,9 +168,23 @@ async def test_import_dry_run_creates_no_records_and_acceptance_creates_only_dra
         candidate = await db.scalar(select(CandidateResource))
         actions = list(await db.scalars(select(AuditEvent.action)))
         assert committed.batch_id is not None and candidate is not None
+        repeated = await preview_or_import_file(
+            db,
+            source_identifier=source.stable_identifier,
+            actor_id=actor.id,
+            file_path=fixture,
+            media_type="application/json",
+            commit=True,
+        )
+        assert repeated.batch_id == committed.batch_id
+        assert len(list(await db.scalars(select(CandidateResource)))) == 1
         assert "import.batch.create" in actions
         assert await db.scalar(select(GovernedResource)) is None
         candidate_id = candidate.id
+    queue = await client.get("/api/v1/admin/imports/candidates?state=MA&city=Exampleville")
+    assert queue.status_code == 200
+    assert queue.json()["pagination"]["total"] == 1
+    assert queue.json()["items"][0]["review_status"] == "ready_for_review"
     accepted = await client.post(
         f"/api/v1/admin/imports/{committed.batch_id}/candidates/{candidate_id}/accept",
         headers={"X-CSRF-Token": csrf},
@@ -170,3 +192,65 @@ async def test_import_dry_run_creates_no_records_and_acceptance_creates_only_dra
     assert accepted.status_code == 200
     assert accepted.json()["state"] == WorkflowState.DRAFT.value
     assert accepted.json()["public_service_id"] is None
+
+
+async def test_import_rejects_old_and_missing_freshness(
+    app: Any, client: Any, tmp_path: Path
+) -> None:
+    async with app.state.session_factory() as db:
+        role = Role(id=5, name=RoleName.ADMINISTRATOR)
+        actor = AdminAccount(
+            email="freshness@example.test",
+            display_name="Freshness Reviewer",
+            password_hash=hash_password("correct horse battery staple"),
+            roles=[role],
+        )
+        db.add(actor)
+        await db.flush()
+        source = ApprovedSource(
+            stable_identifier="freshness-test-source",
+            name="Freshness test source",
+            publishing_organization="Example government",
+            source_url="https://data.example.gov/resources.json",
+            source_type="government_open_data",
+            geographic_scope="United States",
+            resource_categories=["food"],
+            license_name="Public domain fixture",
+            redistribution_permitted=True,
+            automation_permission=True,
+            allowed_hosts=["data.example.gov"],
+            approval_status=SourceApprovalStatus.APPROVED,
+            enabled=True,
+            reviewer_id=actor.id,
+        )
+        db.add(source)
+        await db.commit()
+        rows = []
+        for identifier, freshness in (("old", "2024-12-31"), ("missing", None)):
+            row = {
+                "source_identifier": identifier,
+                "organization_name": "Example",
+                "organization_description": "Fixture",
+                "organization_type": "government",
+                "service_name": identifier,
+                "description": "Fixture",
+                "source_name": "Fixture",
+                "source_url": "https://data.example.gov/resources",
+                "source_organization": "Example government",
+            }
+            if freshness:
+                row["source_record_updated_at"] = freshness
+            rows.append(row)
+        fixture = tmp_path / "freshness.json"
+        fixture.write_text(json.dumps(rows))
+        result = await preview_or_import_file(
+            db,
+            source_identifier=source.stable_identifier,
+            actor_id=actor.id,
+            file_path=fixture,
+            media_type="application/json",
+            commit=False,
+        )
+        assert result.valid == 0
+        assert result.rejected == 2
+        assert all("2025-2026" in item["error"] for item in result.errors)

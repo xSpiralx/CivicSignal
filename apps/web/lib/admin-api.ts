@@ -130,6 +130,47 @@ export type Proposal = {
   warnings: string[];
   ready: boolean;
 };
+export type ImportCandidate = {
+  id: string;
+  batch_id: string;
+  source_identifier: string;
+  source: {
+    stable_identifier: string;
+    name: string;
+    publishing_organization: string;
+    source_url: string;
+    license_name: string | null;
+    license_url: string | null;
+    attribution_requirement: string | null;
+  };
+  content: DraftContent;
+  raw_content: Record<string, unknown> | null;
+  source_url: string | null;
+  source_record_updated_at: string | null;
+  dataset_updated_at: string | null;
+  retrieved_at: string;
+  city: string | null;
+  county: string | null;
+  region: string | null;
+  postal_code: string | null;
+  categories: string[];
+  service_area_type: string;
+  nationwide: boolean;
+  remote: boolean;
+  risk_classification: string;
+  duplicate_classification: string;
+  conflict_status: string;
+  validation_status: string;
+  validation_result: Record<string, unknown>;
+  review_status: string;
+  reviewer_id: string | null;
+  review_decision: string | null;
+  governed_resource_id: string | null;
+  version: number;
+  created_at: string;
+  updated_at: string;
+  audit_history?: { action: string; summary: string; created_at: string }[];
+};
 
 let csrfToken = "";
 export function setCsrf(value: string) {

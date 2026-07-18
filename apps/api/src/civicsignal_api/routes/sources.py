@@ -88,6 +88,8 @@ async def decide_source(
     source.license_url = str(payload.license_url) if payload.license_url else None
     source.terms_url = str(payload.terms_url) if payload.terms_url else None
     source.attribution_requirement = payload.attribution_requirement
+    source.redistribution_permitted = payload.redistribution_permitted
+    source.modification_permitted = payload.modification_permitted
     source.last_legal_review_at = payload.last_legal_review_at
     source.last_technical_review_at = payload.last_technical_review_at
     source.reviewer_id = auth.account.id

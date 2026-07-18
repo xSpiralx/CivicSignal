@@ -14,10 +14,10 @@
       "redistribution_allowed": true,
       "automated_access_allowed": "Download is offered for public reuse; recurring automation remains disabled until a named technical reviewer approves rate and change controls",
       "rate_limit": "One manually initiated snapshot; no scheduled retrieval approved",
-      "freshness": "Official page updated 2026-07-18; source refresh cycle daily; staged records carry 2026 source-record dates",
+      "freshness": "Official page updated 2026-07-16; source refresh cycle daily; staged records carry 2026 source-record dates",
       "quality": "Authoritative for HRSA-supported site identity and dataset fields; not proof of current services, eligibility, daily hours, price, or availability",
-      "decision": "under_review",
-      "reason": "18,953 active 2026 records are safely staged as unpublished candidates; named source and record review is still required before database import or publication",
+      "decision": "approved",
+      "reason": "Usage limitations are none; 18,953 active 2026 records may be imported only as private candidates requiring per-record human review before the separate governed publication workflow",
       "source_url": "https://data.hrsa.gov/data/download?titleFilter=Health+Center",
       "terms_url": "https://data.hrsa.gov/data/data-sources?tab=DataUsage"
     },

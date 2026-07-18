@@ -72,7 +72,9 @@ def _record_date(value: str) -> datetime | None:
         return None
 
 
-def _candidate(row: dict[str, str], retrieved_at: str) -> dict[str, Any] | None:
+def _candidate(
+    row: dict[str, str], retrieved_at: str, dataset_updated_at: str
+) -> dict[str, Any] | None:
     identifier = _clean(row.get("BPHC Assigned Number")) or _clean(row.get("Health Center Number"))
     site_name = _clean(row.get("Site Name"))
     organization = _clean(row.get("Health Center Name"))
@@ -83,6 +85,10 @@ def _candidate(row: dict[str, str], retrieved_at: str) -> dict[str, Any] | None:
     source_record_date = _clean(row.get("Data Warehouse Record Create Date"))
     return {
         "source_identifier": identifier,
+        "source_record_updated_at": datetime.strptime(source_record_date, "%m/%d/%Y")
+        .date()
+        .isoformat(),
+        "dataset_updated_at": dataset_updated_at,
         "organization_name": organization,
         "organization_description": (
             "Organization listed in the official 2026 HRSA Health Center Service Delivery "
@@ -107,6 +113,8 @@ def _candidate(row: dict[str, str], retrieved_at: str) -> dict[str, Any] | None:
         "country": "US",
         "timezone": None,
         "service_area": _clean(row.get("Complete County Name")) or None,
+        "county": _clean(row.get("Complete County Name")) or None,
+        "service_area_type": "local",
         "hours": f"Reported operating hours per week: {hours}" if hours else None,
         "source_name": "HRSA Health Center Service Delivery and Look-Alike Sites (2026)",
         "source_url": HRSA_SOURCE_URL,
@@ -190,7 +198,7 @@ def prepare_hrsa_2026_snapshot(
             if _clean(row["Site Status Description"]).casefold() != "active":
                 skipped_inactive += 1
                 continue
-            candidate = _candidate(row, retrieved_at)
+            candidate = _candidate(row, retrieved_at, source_updated_at)
             if candidate is None or candidate["source_identifier"] in identifiers:
                 rejected_rows += 1
                 continue
