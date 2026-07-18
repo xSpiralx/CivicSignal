@@ -59,6 +59,8 @@ Stop with `docker compose down`. Reset deliberately with `docker compose down -v
 - HTTP-only opaque sessions, Argon2 passwords, CSRF protection, RBAC, and revocation.
 - Transactional verified publication, provenance, freshness calculation, and structured audit events.
 - Deterministic stale detection with advisory locking and duplicate active-task prevention.
+- Optional, human-review-gated [Washington, DC real-data pilot](docs/data/washington-dc-pilot.md)
+  with official-source provenance and 14-day re-verification windows.
 - Responsive semantic public/admin interfaces and keyboard-tested accessible dialogs.
 - FastAPI, Next.js, PostgreSQL, Alembic, Docker Compose, Render, and security-focused CI.
 

@@ -32,6 +32,7 @@ dev = [
 [project.scripts]
 civicsignal = "civicsignal_api.cli:main"
 civicsignal-seed = "civicsignal_api.seed:main"
+civicsignal-pilot-seed = "civicsignal_api.pilot_seed:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/civicsignal_api"]

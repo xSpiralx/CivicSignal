@@ -20,3 +20,4 @@ coverage/
 *.tsbuildinfo
 playwright-report/
 test-results/
+backups/

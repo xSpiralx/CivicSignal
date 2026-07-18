@@ -71,6 +71,8 @@ export function ResourceSearch() {
       "postal_code",
       "language",
       "accessibility",
+      "eligibility",
+      "sort",
     ]) {
       const value = String(data.get(key) ?? "").trim();
       if (value) next.set(key, value);
@@ -81,6 +83,7 @@ export function ResourceSearch() {
   return (
     <div className="grid gap-8 lg:grid-cols-[19rem_1fr]">
       <form
+        key={params.toString()}
         onSubmit={submit}
         aria-label="Resource filters"
         className="glass self-start rounded-[1.7rem] p-5 lg:sticky lg:top-28"
@@ -117,6 +120,7 @@ export function ResourceSearch() {
           ["postal_code", "Postal code"],
           ["language", "Language"],
           ["accessibility", "Accessibility need"],
+          ["eligibility", "Who the service is for"],
         ].map(([name, label]) => (
           <div key={name}>
             <label className="mt-4 block font-bold" htmlFor={name}>
@@ -131,6 +135,20 @@ export function ResourceSearch() {
             />
           </div>
         ))}
+        <label className="mt-4 block font-bold" htmlFor="sort">
+          Sort results
+        </label>
+        <select
+          className="mt-2 min-h-12 w-full rounded-2xl border border-white/90 bg-white/65 px-4 shadow-inner"
+          id="sort"
+          name="sort"
+          defaultValue={params.get("sort") ?? "name"}
+        >
+          <option value="name">Service name</option>
+          <option value="organization">Organization</option>
+          <option value="state_city">State and city</option>
+          <option value="recently_verified">Most recently verified</option>
+        </select>
         <button
           className="liquid-button mt-5 min-h-12 w-full rounded-full bg-gradient-to-b from-[#2987eb] to-[#1767cf] px-4 font-bold text-white"
           type="submit"

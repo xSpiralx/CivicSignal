@@ -93,7 +93,14 @@ async def test_public_api_filters_and_does_not_leak_notes(
 ) -> None:
     service = await add_service(app)
     response = await client.get(
-        "/api/v1/services", params={"city": "Test City", "language": "Spanish", "q": "grocery"}
+        "/api/v1/services",
+        params={
+            "city": "Test City",
+            "language": "Spanish",
+            "eligibility": "residents",
+            "sort": "state_city",
+            "q": "grocery",
+        },
     )
     assert response.status_code == 200
     assert response.json()["pagination"]["total"] == 1
@@ -121,6 +128,7 @@ async def test_inactive_service_is_hidden(app: FastAPI, client: AsyncClient) -> 
 async def test_pagination_and_invalid_input(client: AsyncClient) -> None:
     assert (await client.get("/api/v1/services", params={"page_size": 51})).status_code == 422
     assert (await client.get("/api/v1/services", params={"q": "x" * 201})).status_code == 422
+    assert (await client.get("/api/v1/services", params={"sort": "distance"})).status_code == 422
     response = await client.get("/api/v1/services", params={"category": "unsupported"})
     assert response.status_code == 200 and response.json()["items"] == []
 

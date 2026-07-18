@@ -76,6 +76,8 @@ services:
     envVars:
       - key: NEXT_PUBLIC_APP_ENV
         value: staging
+      - key: NEXT_PUBLIC_DATA_MODE
+        value: demo
       - key: API_INTERNAL_URL
         fromService:
           type: pserv

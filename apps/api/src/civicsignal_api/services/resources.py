@@ -136,27 +136,29 @@ async def list_services(
     postal_code: str | None,
     language: str | None,
     accessibility: str | None,
+    eligibility: str | None,
+    sort: Literal["name", "organization", "state_city", "recently_verified"],
     page: int,
     page_size: int,
 ) -> ServiceListResponse:
     statement = _base_public_query()
     if query:
         pattern = f"%{query}%"
-        statement = (
-            statement.outerjoin(Location, Location.service_id == Service.id)
-            .outerjoin(Service.categories)
-            .where(
-                or_(
-                    Organization.public_name.ilike(pattern),
-                    Service.name.ilike(pattern),
-                    Service.description.ilike(pattern),
-                    Service.eligibility.ilike(pattern),
-                    Category.name.ilike(pattern),
-                    Location.city.ilike(pattern),
-                    Location.region.ilike(pattern),
-                    Location.postal_code.ilike(pattern),
-                    Service.languages.ilike(pattern),
-                )
+        statement = statement.where(
+            or_(
+                Organization.public_name.ilike(pattern),
+                Service.name.ilike(pattern),
+                Service.description.ilike(pattern),
+                Service.eligibility.ilike(pattern),
+                Service.categories.any(Category.name.ilike(pattern)),
+                Service.locations.any(
+                    or_(
+                        Location.city.ilike(pattern),
+                        Location.region.ilike(pattern),
+                        Location.postal_code.ilike(pattern),
+                    )
+                ),
+                Service.languages.ilike(pattern),
             )
         )
     if category:
@@ -171,11 +173,45 @@ async def list_services(
         statement = statement.where(Service.languages.ilike(f"%{language}%"))
     if accessibility:
         statement = statement.where(Service.accessibility.ilike(f"%{accessibility}%"))
-    statement = statement.distinct()
+    if eligibility:
+        statement = statement.where(Service.eligibility.ilike(f"%{eligibility}%"))
     total = await session.scalar(select(func.count()).select_from(statement.subquery())) or 0
+    location_region = (
+        select(func.min(Location.region))
+        .where(Location.service_id == Service.id, Location.is_active.is_(True))
+        .correlate(Service)
+        .scalar_subquery()
+    )
+    location_city = (
+        select(func.min(Location.city))
+        .where(Location.service_id == Service.id, Location.is_active.is_(True))
+        .correlate(Service)
+        .scalar_subquery()
+    )
+    latest_check = (
+        select(func.max(Verification.checked_at))
+        .where(Verification.service_id == Service.id)
+        .correlate(Service)
+        .scalar_subquery()
+    )
+    ordering = {
+        "name": (Service.name.asc(), Service.id.asc()),
+        "organization": (Organization.public_name.asc(), Service.name.asc(), Service.id.asc()),
+        "state_city": (
+            location_region.asc().nulls_last(),
+            location_city.asc().nulls_last(),
+            Service.name.asc(),
+            Service.id.asc(),
+        ),
+        "recently_verified": (
+            latest_check.desc().nulls_last(),
+            Service.name.asc(),
+            Service.id.asc(),
+        ),
+    }[sort]
     rows = await session.scalars(
         statement.options(*_options())
-        .order_by(Service.name.asc(), Service.id.asc())
+        .order_by(*ordering)
         .offset((page - 1) * page_size)
         .limit(page_size)
     )

@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -36,6 +36,8 @@ async def services(
     postal_code: Annotated[str | None, Query(max_length=30)] = None,
     language: Annotated[str | None, Query(max_length=80)] = None,
     accessibility: Annotated[str | None, Query(max_length=120)] = None,
+    eligibility: Annotated[str | None, Query(max_length=200)] = None,
+    sort: Literal["name", "organization", "state_city", "recently_verified"] = "name",
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=50)] = 20,
 ) -> ServiceListResponse:
@@ -48,6 +50,8 @@ async def services(
         postal_code=postal_code,
         language=language,
         accessibility=accessibility,
+        eligibility=eligibility,
+        sort=sort,
         page=page,
         page_size=page_size,
     )
@@ -74,6 +78,8 @@ async def organizations(session: Session) -> list[OrganizationSummary]:
         postal_code=None,
         language=None,
         accessibility=None,
+        eligibility=None,
+        sort="name",
         page=1,
         page_size=50,
     )

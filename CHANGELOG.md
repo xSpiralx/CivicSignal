@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add a human-review-gated Washington, DC pilot candidate dataset with official provenance.
+- Add eligibility filtering and name, organization, geography, and verification-date sorting.
+- Add recovery, deployment, rollback, security, accessibility, and v1.0 release records.
+
 - Add public correction reporting with bounded validation, privacy warnings, duplicate mitigation,
   network/resource rate limits, and audit events.
 - Add permissioned correction triage and operational re-verification queues, outcomes, and linked
@@ -19,10 +23,6 @@
 - Isolate trusted-host test configuration from developer environment files.
 
 This project follows Keep a Changelog and intends to use Semantic Versioning after the initial alpha.
-
-## [Unreleased]
-
-### Added
 
 - Verified-resource domain, read-only API, deterministic search, public directory UI, fictional demo seed, PWA shell, governance, deployment, privacy, and release documentation.
 
