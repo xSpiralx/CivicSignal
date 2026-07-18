@@ -2,7 +2,8 @@
 
 | Priority | Class | Finding | Disposition |
 |---:|---|---|---|
-| P0 | Data integrity | No correction workflow | Block beta; implement bounded, rate-limited intake and triage |
+| P1 | Security | Correction limiter is process-local | Add shared edge/datastore limiter before multi-instance beta |
+| P1 | Accessibility | Correction/re-verification manual and browser review incomplete | Block beta pending automated and manual review |
 | P0 | Security | No controlled import/ingestion or SSRF boundary | Block beta; build allowlisted job systems and adversarial tests |
 | P0 | Reliability | No verified restore or alert path | Block beta pending provider drill and tested destination |
 | P0 | Data integrity | No approved real-data pilot | Block beta pending owner/source approval |

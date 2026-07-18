@@ -1,5 +1,6 @@
 from civicsignal_api.models.auth import AdminAccount, AdminSession, AuditEvent, Role
 from civicsignal_api.models.governance import (
+    CorrectionReport,
     GovernanceDecision,
     GovernedResource,
     ResourceRevision,
@@ -24,6 +25,7 @@ __all__ = [
     "GovernanceDecision",
     "Category",
     "ContactChannel",
+    "CorrectionReport",
     "Location",
     "Organization",
     "Service",

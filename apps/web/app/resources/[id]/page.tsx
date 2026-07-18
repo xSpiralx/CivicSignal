@@ -167,6 +167,24 @@ export default async function ResourceDetailPage({
             ))}
           </ul>
         </section>
+        <section
+          className="mt-8 rounded-3xl bg-white/65 p-5"
+          aria-labelledby="correction"
+        >
+          <h2 id="correction" className="text-xl font-bold">
+            Is something incorrect?
+          </h2>
+          <p className="mt-2 text-[var(--muted)]">
+            Send a correction for review. Reports never change public
+            information automatically.
+          </p>
+          <Link
+            className="mt-4 inline-flex rounded-full bg-[#176d83] px-4 py-2 font-bold text-white"
+            href={`/resources/${resource.id}/report`}
+          >
+            Report incorrect information
+          </Link>
+        </section>
       </article>
     </main>
   );

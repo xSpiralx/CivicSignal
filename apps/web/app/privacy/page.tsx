@@ -17,6 +17,12 @@ export default function PrivacyPage() {
           Do not include private medical, legal, immigration, or crisis
           information in support or correction messages.
         </p>
+        <p className="mt-5">
+          Correction reports contain the description you submit and optional
+          contact details. Contact details are restricted to authorized
+          administrators and should be redacted after the operator&apos;s
+          published retention period.
+        </p>
       </article>
     </main>
   );

@@ -60,6 +60,44 @@ export type GovernedResource = {
   created_at: string;
   updated_at: string;
 };
+export type Correction = {
+  id: string;
+  service_id: string;
+  category: string;
+  description: string;
+  reporter_name: string | null;
+  reporter_email: string | null;
+  status: string;
+  assigned_reviewer_id: string | null;
+  duplicate_of_id: string | null;
+  task_id: string | null;
+  resolution_reason: string | null;
+  resolved_at: string | null;
+  version: number;
+  submitted_at: string;
+};
+export type ReverificationTask = {
+  id: string;
+  service_id: string;
+  resource_id: string | null;
+  published_revision_id: string | null;
+  trigger_source: string;
+  reason: string;
+  freshness_state: string;
+  due_at: string;
+  status: string;
+  assigned_verifier_id: string | null;
+  claimed_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  outcome: string | null;
+  evidence_summary: string | null;
+  contact_attempt_summary: string | null;
+  source_references: string[] | null;
+  notes: string | null;
+  version: number;
+  created_at: string;
+};
 
 let csrfToken = "";
 export function setCsrf(value: string) {

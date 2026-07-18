@@ -3,7 +3,7 @@ import { internalApiBase } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(
+async function proxy(
   request: NextRequest,
   context: { params: Promise<{ path: string[] }> },
 ) {
@@ -17,6 +17,15 @@ export async function GET(
   );
   try {
     const response = await fetch(target, {
+      method: request.method,
+      headers: {
+        "content-type":
+          request.headers.get("content-type") ?? "application/json",
+      },
+      body:
+        request.method === "GET" || request.method === "HEAD"
+          ? undefined
+          : await request.text(),
       cache: "no-store",
       signal: AbortSignal.timeout(5000),
     });
@@ -34,3 +43,6 @@ export async function GET(
     );
   }
 }
+
+export const GET = proxy;
+export const POST = proxy;

@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from civicsignal_api.models.auth import AdminAccount, AuditEvent
 from civicsignal_api.models.governance import (
@@ -147,7 +148,16 @@ async def publish(
         await db.flush()
         resource.public_service_id = service.id
     else:
-        existing_service = await db.get(Service, resource.public_service_id)
+        existing_service = await db.scalar(
+            select(Service)
+            .where(Service.id == resource.public_service_id)
+            .options(
+                selectinload(Service.organization),
+                selectinload(Service.categories),
+                selectinload(Service.locations),
+                selectinload(Service.contacts),
+            )
+        )
         if existing_service is None:
             raise HTTPException(500, "Published service is unavailable")
         service = existing_service
@@ -160,6 +170,18 @@ async def publish(
             ", ".join(content.languages),
             content.accessibility,
         )
+        service.application_instructions = content.application_instructions
+        service.organization.public_name = content.organization_name
+        service.organization.description = content.organization_description
+        service.organization.organization_type = content.organization_type
+        service.organization.website = str(content.website) if content.website else None
+        service.organization.public_phone = content.contact_phone
+        service.organization.public_email = content.contact_email
+        service.categories.clear()
+        for existing_location in list(service.locations):
+            await db.delete(existing_location)
+        for existing_contact in list(service.contacts):
+            await db.delete(existing_contact)
     for name in content.categories:
         slug = "-".join(name.casefold().split())[:80]
         category = await db.scalar(select(Category).where(Category.slug == slug))
@@ -167,7 +189,17 @@ async def publish(
             category = Category(slug=slug, name=name[:120], description=None, is_active=True)
             db.add(category)
         service.categories.append(category)
-    if content.location_name or content.service_area:
+    if any(
+        (
+            content.location_name,
+            content.service_area,
+            content.city,
+            content.region,
+            content.postal_code,
+            content.hours,
+            content.transportation,
+        )
+    ):
         db.add(
             Location(
                 organization=service.organization,

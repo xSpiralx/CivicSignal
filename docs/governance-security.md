@@ -1,8 +1,8 @@
 # Governance security foundation
 
-This document describes the implemented identity foundation. Resource workflow, imports,
-exports, corrections, and the administrator interface remain release blockers until their
-corresponding backend behavior and tests are merged.
+This document describes the identity and governed trust-workflow foundation. Resource corrections
+and operational re-verification now have permissioned APIs and administrator interfaces. Imports,
+exports, independent review, and complete browser validation remain release blockers.
 
 ## Administrator bootstrap
 
@@ -46,5 +46,5 @@ audit rows without credentials, cookies, CSRF values, or request bodies.
 - Network-aware distributed rate limiting still belongs at the trusted reverse proxy.
 - Account/session management endpoints and password reset are not implemented.
 - Database-level audit immutability and the audit viewer are not implemented.
-- Governance workflows and the administrator frontend are not implemented.
+- Some governance actions still use legacy browser prompts and require accessible-dialog remediation.
 - No deployment is approved by this milestone.

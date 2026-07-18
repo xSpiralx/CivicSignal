@@ -1,9 +1,10 @@
 # Development environment
 
-1. Clone the repository and copy `.env.example` to `.env`.
-2. Run `docker compose up --build -d`.
+1. Configure an ignored `.env` once. Do not replace it with `.env.example` after configuration.
+   This checkout uses `WEB_PORT=3001` and `API_PORT=8001`.
+2. Run `cd /Users/robb/Documents/GitHub/CivicSignal && docker compose up --build -d`.
 3. Run `docker compose exec api alembic upgrade head` and `docker compose exec api civicsignal-seed`.
-4. Open <http://localhost:3000/resources> and <http://localhost:8000/docs>.
+4. Open <http://localhost:3001/resources>, <http://localhost:3001/admin/sign-in>, and <http://localhost:8001/docs>.
 5. Run checks from `CONTRIBUTING.md`.
 6. Stop with `docker compose down`; reset only intentionally with `docker compose down -v`.
 

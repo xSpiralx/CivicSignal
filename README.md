@@ -22,13 +22,15 @@ Public results require an active organization and service, at least one source, 
 
 Requirements: Docker with Compose v2.
 
+This configured checkout uses web port `3001` and API port `8001`. **Do not replace the local
+`.env` with `.env.example` after configuration.** The local file is ignored by Git.
+
 ```bash
-cp .env.example .env
+cd /Users/robb/Documents/GitHub/CivicSignal
 docker compose up --build -d
-docker compose exec api civicsignal-seed
 ```
 
-Open <http://localhost:3000/resources>; API documentation is at <http://localhost:8000/docs>. The demo is fictional and uses reserved `.example` domains.
+Open <http://localhost:3001/resources>; API documentation is at <http://localhost:8001/docs>. The demo is fictional and uses reserved `.example` domains.
 
 ```bash
 curl 'http://localhost:8000/api/v1/services?category=food-assistance&city=Exampleville'

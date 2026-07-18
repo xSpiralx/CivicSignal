@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add public correction reporting with bounded validation, privacy warnings, duplicate mitigation,
+  network/resource rate limits, and audit events.
+- Add permissioned correction triage and operational re-verification queues, outcomes, and linked
+  report resolution.
+
 - Add deterministic, idempotent stale detection with dry-run support, audit events, and one active
   re-verification task per service.
 - Add a daily staging stale-detection schedule and public-beta release gates/risk register.

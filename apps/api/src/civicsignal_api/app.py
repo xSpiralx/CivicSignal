@@ -12,9 +12,12 @@ from civicsignal_api.core.middleware import correlation_id_middleware, request_s
 from civicsignal_api.db.session import create_database_engine, create_session_factory
 from civicsignal_api.routes.admin_accounts import router as admin_accounts_router
 from civicsignal_api.routes.auth import router as auth_router
+from civicsignal_api.routes.corrections import admin_router as corrections_admin_router
+from civicsignal_api.routes.corrections import public_router as corrections_public_router
 from civicsignal_api.routes.governance import router as governance_router
 from civicsignal_api.routes.health import router as health_router
 from civicsignal_api.routes.resources import router as resources_router
+from civicsignal_api.routes.reverification import router as reverification_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -53,5 +56,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(auth_router)
     app.include_router(admin_accounts_router)
     app.include_router(governance_router)
+    app.include_router(corrections_public_router)
+    app.include_router(corrections_admin_router)
+    app.include_router(reverification_router)
     app.include_router(resources_router)
     return app

@@ -7,12 +7,12 @@ row is not passed.
 |---|---|---:|---|
 | Stale detection is repeatable | Data integrity | passed | Backend deterministic/idempotency tests |
 | Trusted-host tests are environment-isolated | Security | passed | Explicit test hosts in fixture |
-| Full re-verification operations UI | Release blocker | blocked | Queue assignment and outcomes not built |
-| Public correction reporting | Release blocker | blocked | Public and administrator flows not built |
+| Re-verification operations | Release blocker | blocked | Core queue/outcomes pass; update-and-confirm browser coverage remains |
+| Public correction reporting | Data integrity | passed | Safe public intake, triage, escalation, and linked resolution tests |
 | Controlled import and export | Release blocker | blocked | Job lifecycle and secure downloads not built |
 | Approved-source ingestion and SSRF suite | Security | blocked | Fetch framework not built |
 | Distance search and accessible map | Accessibility | blocked | No map/search implementation |
-| Rate limiting for public writes | Security | blocked | Correction/feedback endpoints absent |
+| Rate limiting for public writes | Security | blocked | Process-local correction limits exist; distributed edge limit required |
 | Browser governance workflows | Reliability | blocked | Only public directory E2E exists |
 | Accessibility review | Accessibility | blocked | Manual review not performed |
 | High-severity security findings | Security | blocked | Independent RC review not performed |
