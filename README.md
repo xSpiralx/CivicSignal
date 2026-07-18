@@ -62,6 +62,11 @@ Open the public directory at <http://localhost:3000/resources> and administrator
 <http://localhost:3000/admin/sign-in>. Sign out from the administrator header. Run backend checks
 with `cd apps/api && .venv/bin/pytest` and frontend checks with `cd apps/web && npm test`.
 
+Run the freshness job safely with `docker compose exec api civicsignal resources detect-stale
+--dry-run`; remove `--dry-run` to create idempotent re-verification work. CivicSignal is not a public
+beta or v1.0. The current release blockers are tracked in
+[`docs/release/beta-checklist.md`](docs/release/beta-checklist.md).
+
 ## Architecture
 
 ```mermaid

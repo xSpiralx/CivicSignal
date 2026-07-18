@@ -5,6 +5,7 @@ from typing import Any
 
 from sqlalchemy import (
     JSON,
+    Boolean,
     DateTime,
     Enum,
     ForeignKey,
@@ -86,3 +87,26 @@ class GovernanceDecision(Base):
     evidence: Mapped[dict[str, Any] | None] = mapped_column(JSON)
     next_due_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class ReverificationTask(Base):
+    __tablename__ = "reverification_tasks"
+    __table_args__ = (
+        UniqueConstraint("service_id", "active", name="uq_active_reverification_per_service"),
+    )
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    service_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("services.id", ondelete="CASCADE"), index=True
+    )
+    resource_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("governed_resources.id", ondelete="SET NULL"), index=True
+    )
+    reason: Mapped[str] = mapped_column(String(80))
+    freshness_state: Mapped[str] = mapped_column(String(30), index=True)
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    active: Mapped[bool | None] = mapped_column(Boolean, default=True, index=True)
+    assigned_verifier_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("admin_accounts.id", ondelete="SET NULL"), index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

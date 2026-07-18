@@ -11,7 +11,9 @@ from civicsignal_api.db.base import Base
 
 @pytest.fixture
 def app() -> FastAPI:
-    return create_app(Settings(database_url="sqlite+aiosqlite:///:memory:"))
+    return create_app(
+        Settings(database_url="sqlite+aiosqlite:///:memory:", allowed_hosts="test,testserver")
+    )
 
 
 @pytest.fixture

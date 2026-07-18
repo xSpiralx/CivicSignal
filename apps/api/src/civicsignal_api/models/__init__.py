@@ -1,5 +1,10 @@
 from civicsignal_api.models.auth import AdminAccount, AdminSession, AuditEvent, Role
-from civicsignal_api.models.governance import GovernanceDecision, GovernedResource, ResourceRevision
+from civicsignal_api.models.governance import (
+    GovernanceDecision,
+    GovernedResource,
+    ResourceRevision,
+    ReverificationTask,
+)
 from civicsignal_api.models.resource import (
     Category,
     ContactChannel,
@@ -27,4 +32,5 @@ __all__ = [
     "Verification",
     "Role",
     "ResourceRevision",
+    "ReverificationTask",
 ]

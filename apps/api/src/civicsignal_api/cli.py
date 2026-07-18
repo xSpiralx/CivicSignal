@@ -1,6 +1,8 @@
 import argparse
 import asyncio
 import getpass
+import json
+from datetime import datetime
 
 from sqlalchemy import select
 
@@ -8,6 +10,7 @@ from civicsignal_api.core.config import get_settings
 from civicsignal_api.db.session import create_database_engine, create_session_factory
 from civicsignal_api.models.auth import AdminAccount, AuditEvent, Role, RoleName
 from civicsignal_api.security import hash_password, normalize_identifier
+from civicsignal_api.services.stale_detection import detect_stale
 
 
 async def create_admin(email: str, display_name: str) -> None:
@@ -48,6 +51,18 @@ async def create_admin(email: str, display_name: str) -> None:
     print("Administrator created")
 
 
+async def run_stale_detection(*, dry_run: bool, at: str | None) -> None:
+    execution_time = datetime.fromisoformat(at.replace("Z", "+00:00")) if at else None
+    engine = create_database_engine(get_settings().database_url)
+    factory = create_session_factory(engine)
+    try:
+        async with factory() as db:
+            summary = await detect_stale(db, now=execution_time, dry_run=dry_run)
+    finally:
+        await engine.dispose()
+    print(json.dumps(summary.as_dict(), sort_keys=True))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog="civicsignal")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -56,6 +71,13 @@ def main() -> None:
     create = admin_commands.add_parser("create")
     create.add_argument("--email", required=True)
     create.add_argument("--display-name", required=True)
+    resources = commands.add_parser("resources")
+    resource_commands = resources.add_subparsers(dest="resource_command", required=True)
+    stale = resource_commands.add_parser("detect-stale")
+    stale.add_argument("--dry-run", action="store_true")
+    stale.add_argument("--at", help="ISO 8601 execution time for deterministic runs")
     args = parser.parse_args()
     if args.command == "admin" and args.admin_command == "create":
         asyncio.run(create_admin(args.email, args.display_name))
+    elif args.command == "resources" and args.resource_command == "detect-stale":
+        asyncio.run(run_stale_detection(dry_run=args.dry_run, at=args.at))

@@ -1,5 +1,12 @@
 # Roadmap
 
+## Public-beta release candidate
+
+Automated stale detection is implemented. Public correction reports, complete re-verification
+operations, controlled import/export, approved-source ingestion, accessible geospatial discovery,
+tested monitoring/restore, real-data approval, and independent security/accessibility review remain
+public-beta blockers. See `docs/release/beta-checklist.md` for the authoritative gate.
+
 ## v0.1.0-alpha — directory foundation
 
 Source-aware data model, read-only API, deterministic search, accessible public UI, fictional demo, self-hosting documentation, PWA shell, governance, and verification policy.
